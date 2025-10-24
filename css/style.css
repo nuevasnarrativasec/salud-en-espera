@@ -1,0 +1,258 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;    
+}
+body, 
+html {        
+    margin: 0;    
+    padding: 0;    
+    font-style: normal;
+    font-display: swap;
+
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    overflow-x: hidden;
+}
+
+        /* Contenedor con altura ajustable para controlar la velocidad del scroll */
+        .video-scroll-container {
+            position: relative;
+            /* AJUSTA ESTE VALOR para controlar la velocidad */
+            /* 500vh = rápido, 1000vh = moderado, 2000vh = lento */
+            height: 2500vh;
+            background: #000;
+        }
+
+        /* Video sticky que se mantiene fijo */
+        .video-sticky {
+            position: sticky;
+            top: 0;
+            width: 100%;
+            height: 100vh;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        /* El video */
+        #scrollVideo {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+        }
+
+
+        /* Contenedor con altura ajustable para controlar la velocidad del scroll */
+        .image-scroll-container {
+            position: relative;
+            /* AJUSTA ESTE VALOR para controlar la velocidad */
+            /* Valores sugeridos: 500vh (rápido), 1000vh (moderado), 2000vh (lento) */
+            height: 1500vh;
+            background: #f7f3e7;
+        }
+
+        /* Canvas sticky que se mantiene fijo */
+        .canvas-sticky {
+            align-items: center;
+            background: #f7f3e7;
+            display: flex;
+            height: 100vh;
+            justify-content: center;
+            overflow: hidden;
+            position: sticky;
+            top: 0;
+            width: 100%;            
+        }
+
+        /* Canvas para renderizar las imágenes */
+        #imageCanvas {
+            max-width: 100%;
+            max-height: 100%;
+            display: block;
+        }
+
+
+        
+        /* Animations */
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateX(-50%) translateY(0);
+            }
+            40% {
+                transform: translateX(-50%) translateY(-10px);
+            }
+            60% {
+                transform: translateX(-50%) translateY(-5px);
+            }
+        }
+
+        @keyframes scroll-down {
+            0% {
+                opacity: 0;
+                top: 10px;
+            }
+            30% {
+                opacity: 1;
+            }
+            60% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+                top: 30px;
+            }
+        }
+
+        /* Loading indicator */
+        .loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: #000;
+            color: white;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .loading-content {
+            max-width: 600px;
+            text-align: center;
+        }
+
+        .loading-stat {
+            font-size: clamp(1.2rem, 3vw, 1.8rem);
+            line-height: 1.6;
+            margin-bottom: 2rem;
+            opacity: 1;
+            min-height: 100px;
+            transition: opacity 0.3s ease;
+        }
+
+        .loading-stat strong {
+            color: #667eea;
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 1.1em;
+        }
+
+        .loading-bar {
+            margin: 0 auto;
+            width: 100%;
+            max-width: 400px;
+            height: 4px;
+            background: #333;
+            margin-top: 1rem;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .loading-progress {
+            height: 100%;
+            background: linear-gradient(to right, #667eea, #764ba2);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .loading.hidden {
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+        }
+
+        @keyframes fadeInStat {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Rotate phone message for mobile */
+        .rotate-phone {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.95);
+            color: white;
+            z-index: 999;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .rotate-phone.show {
+            display: flex;
+        }
+
+        .rotate-icon {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            animation: rotateAnimation 2s ease-in-out infinite;
+        }
+
+        .rotate-phone h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .rotate-phone p {
+            font-size: 1.1rem;
+            color: #aaa;
+            max-width: 400px;
+        }
+
+        @keyframes rotateAnimation {
+            0%, 100% {
+                transform: rotate(0deg);
+            }
+            50% {
+                transform: rotate(90deg);
+            }
+        }
+
+        @media (orientation: landscape) and (max-width: 1024px) {
+            .rotate-phone {
+                display: none !important;
+            }
+        }
+
+        /* Progress bar superior */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 4px;
+            background: linear-gradient(to right, #667eea, #764ba2);
+            z-index: 100;
+            width: 0%;
+        }

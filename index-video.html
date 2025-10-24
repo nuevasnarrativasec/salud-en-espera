@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salud en Espera</title>
+
+    <link rel="stylesheet" href="./css/style.css?v6">
+
+    <!-- Scrolly Video Library -->
+    <script src="https://cdn.jsdelivr.net/npm/scrolly-video@latest/dist/scrolly-video.js"></script>
+</head>
+<body>
+
+    <!-- Progress Bar -->
+    <div class="progress-bar" id="progressBar"></div>
+
+    <!-- Contenedor del video con scroll -->
+    <div class="video-scroll-container">
+        <div class="video-sticky">
+            <video id="scrollVideo" muted playsinline preload="auto">
+                <source src="./video/video-intro.mp4" type="video/mp4">
+                Tu navegador no soporta video HTML5.
+            </video>
+        </div>
+    </div>
+
+
+    <script>
+        const video = document.getElementById('scrollVideo');
+        const container = document.querySelector('.video-scroll-container');
+        
+        // Variables para suavizado
+        let targetTime = 0;
+        let currentTime = 0;
+        const smoothing = 0.1; // Ajusta entre 0.05 (muy suave) y 0.3 (más directo)
+        
+        // Función principal de scroll
+        function updateVideo() {
+            const rect = container.getBoundingClientRect();
+            const containerHeight = container.offsetHeight;
+            const windowHeight = window.innerHeight;
+            
+            // Calcular el progreso del scroll
+            // Cuando rect.top = 0, estamos al inicio
+            // Cuando rect.top = windowHeight - containerHeight, estamos al final
+            const scrollableHeight = containerHeight - windowHeight;
+            const scrolled = -rect.top;
+            const progress = Math.max(0, Math.min(1, scrolled / scrollableHeight));
+            
+            // Calcular el tiempo objetivo del video
+            if (video.duration) {
+                targetTime = video.duration * progress;
+            }
+        }
+        
+        // Loop de animación suave
+        function animate() {
+            // Interpolar suavemente hacia el tiempo objetivo
+            currentTime += (targetTime - currentTime) * smoothing;
+            
+            // Actualizar el video solo si hay diferencia significativa
+            if (Math.abs(video.currentTime - currentTime) > 0.1) {
+                video.currentTime = currentTime;
+            }
+            
+            requestAnimationFrame(animate);
+        }
+        
+        // Event listener para scroll
+        let ticking = false;
+        window.addEventListener('scroll', () => {
+            if (!ticking) {
+                requestAnimationFrame(() => {
+                    updateVideo();
+                    ticking = false;
+                });
+                ticking = true;
+            }
+        }, { passive: true });
+        
+        // Cargar metadata y empezar
+        video.addEventListener('loadedmetadata', () => {
+            console.log('Video cargado:', video.duration, 'segundos');
+            updateVideo();
+            animate();
+        });
+        
+        // Por si el metadata ya está cargado
+        if (video.readyState >= 1) {
+            updateVideo();
+            animate();
+        }
+        
+        // Actualizar en resize
+        window.addEventListener('resize', () => {
+            updateVideo();
+        });
+    </script>
+
+    
+</body>
+</html>

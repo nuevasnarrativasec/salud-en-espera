@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salud en Espera</title>
+
+    <link rel="stylesheet" href="./css/style.css?v8">
+
+   
+</head>
+<body>
+
+    <!-- Rotate phone message for mobile portrait -->
+    <div class="rotate-phone" id="rotatePhone">
+        <div class="rotate-icon">📱</div>
+        <h2>Mejor experiencia en horizontal</h2>
+        <p>Por favor, gira tu dispositivo para apreciar mejor la animación</p>
+    </div>
+
+    <!-- Loading indicator with rotating stats -->
+    <div class="loading" id="loading">
+        <div class="loading-content">
+            <div class="loading-stat" id="loadingStat">
+                <strong>Primer nivel debilitado</strong>
+                Más del 95% de los establecimientos de salud del primer nivel operan con capacidad instalada inadecuada
+            </div>
+            <div class="loading-details" id="loadingDetails">
+                
+            </div>
+            <div class="loading-bar">
+                <div class="loading-progress" id="loadingProgress"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Progress bar -->
+    <div class="progress-bar" id="progressBar"></div>
+
+    <!-- Contenedor del scroll de imágenes -->
+    <div class="image-scroll-container" id="scrollContainer">
+        <div class="canvas-sticky">
+            <canvas id="imageCanvas"></canvas>
+        </div>
+    </div>
+
+    <div class="">
+        <p>contenido</p>
+    </div>
+
+
+    <script>       
+        const config = {  
+            imagePath: './frames/frame{index}.jpg',
+            
+            // Número total de frames/imágenes
+            frameCount: 1649, // Cambia según cuántas imágenes tengas
+            
+            // Padding para los números (0000, 0001, etc.)
+            zeroPadding: 4, // 4 = 0000, 3 = 000
+            
+            // LAZY LOADING CONFIG
+            preloadBatchSize: 30,  // Cargar 50 frames al inicio
+            loadAheadRange: 20,    // Cargar 30 frames adelante del actual
+            loadBehindRange: 5    // Mantener 10 frames atrás
+        };
+
+        // Estadísticas de salud
+        const healthStats = [
+            {
+                title: 'Primer nivel debilitado',
+                text: 'Más del 95% de los establecimientos de salud del primer nivel operan con capacidad instalada inadecuada'
+            },
+            {
+                title: 'Cobertura insuficiente',
+                text: 'Se requieren más de 2,000 nuevos centros de promoción y vigilancia comunal; el 74% aún no se implementa'
+            },
+            {
+                title: 'Hospitales saturados',
+                text: '92% de los hospitales presentan infraestructura inadecuada y un 34% está aún por implementarse'
+            },
+            {
+                title: 'Medicamentos esenciales faltantes',
+                text: 'Desde antihipertensivos hasta oncológicos, el desabastecimiento es recurrente'
+            }
+        ];
+
+        // Variables globales
+        const canvas = document.getElementById('imageCanvas');
+        const ctx = canvas.getContext('2d');
+        const container = document.getElementById('scrollContainer');
+        const loading = document.getElementById('loading');
+        const loadingStat = document.getElementById('loadingStat');
+        const loadingDetails = document.getElementById('loadingDetails');
+        const loadingProgress = document.getElementById('loadingProgress');
+        const progressBar = document.getElementById('progressBar');
+        const rotatePhone = document.getElementById('rotatePhone');
+        
+        const images = new Array(config.frameCount).fill(null);
+        let loadedCount = 0;
+        let currentFrame = 0;
+        let targetFrame = 0;
+        let currentStatIndex = 0;
+        let statRotationInterval;
+        let isInitialized = false;
+
+        // Generar path de imagen
+        function getImagePath(index) {
+            const paddedIndex = String(index).padStart(config.zeroPadding, '0');
+            return config.imagePath.replace('{index}', paddedIndex);
+        }
+
+        // Cargar una imagen específica
+        function loadImage(index) {
+            return new Promise((resolve, reject) => {
+                if (index < 0 || index >= config.frameCount) {
+                    reject('Index out of bounds');
+                    return;
+                }
+
+                // Si ya está cargada, retornar
+                if (images[index] && images[index].complete) {
+                    resolve(images[index]);
+                    return;
+                }
+
+                const img = new Image();
+                
+                img.onload = () => {
+                    images[index] = img;
+                    loadedCount++;
+                    resolve(img);
+                };
+                
+                img.onerror = () => {
+                    console.error(`Error cargando: ${getImagePath(index)}`);
+                    reject();
+                };
+                
+                img.src = getImagePath(index);
+            });
+        }
+
+        // Cargar batch inicial de imágenes
+        async function preloadInitialBatch() {
+            const promises = [];
+            const batchSize = Math.min(config.preloadBatchSize, config.frameCount);
+            
+            for (let i = 0; i < batchSize; i++) {
+                promises.push(
+                    loadImage(i).then(() => {
+                        const progress = ((i + 1) / batchSize) * 100;
+                        loadingProgress.style.width = progress + '%';
+                        loadingDetails.textContent = `Cargando frames iniciales... ${i + 1}/${batchSize}`;
+                    })
+                );
+            }
+
+            await Promise.all(promises);
+        }
+
+        // Cargar frames dinámicamente según scroll
+        function loadFramesInRange(centerFrame) {
+            const start = Math.max(0, centerFrame - config.loadBehindRange);
+            const end = Math.min(config.frameCount - 1, centerFrame + config.loadAheadRange);
+            
+            for (let i = start; i <= end; i++) {
+                if (!images[i]) {
+                    loadImage(i).catch(() => {});
+                }
+            }
+        }
+
+        // Configurar canvas
+        function setupCanvas(width, height) {
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            const isPortrait = window.innerHeight > window.innerWidth;
+            
+            // En móvil vertical: contain (mantener proporciones)
+            // En desktop o móvil horizontal: cover (llenar pantalla)
+            const useCover = !(isMobile && isPortrait);
+            
+            const scale = useCover 
+                ? Math.max(window.innerWidth / width, window.innerHeight / height)  // cover
+                : Math.min(window.innerWidth / width, window.innerHeight / height); // contain
+            
+            canvas.width = width;
+            canvas.height = height;
+            canvas.style.width = (width * scale) + 'px';
+            canvas.style.height = (height * scale) + 'px';
+        }
+
+        // Renderizar frame
+        function renderFrame(frameIndex) {
+            const index = Math.max(0, Math.min(config.frameCount - 1, Math.floor(frameIndex)));
+            
+            if (images[index] && images[index].complete) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.drawImage(images[index], 0, 0, canvas.width, canvas.height);
+            }
+        }
+
+        // Actualizar según scroll
+        function updateOnScroll() {
+            const rect = container.getBoundingClientRect();
+            const containerHeight = container.offsetHeight;
+            const windowHeight = window.innerHeight;
+            
+            const scrollableHeight = containerHeight - windowHeight;
+            const scrolled = -rect.top;
+            const progress = Math.max(0, Math.min(1, scrolled / scrollableHeight));
+            
+            targetFrame = progress * (config.frameCount - 1);
+            progressBar.style.width = (progress * 100) + '%';
+
+            // Cargar frames cercanos al actual
+            if (isInitialized) {
+                loadFramesInRange(Math.floor(targetFrame));
+            }
+        }
+
+        // Loop de animación
+        function animate() {
+            const diff = targetFrame - currentFrame;
+            currentFrame += diff * 0.1;
+            
+            renderFrame(currentFrame);
+            requestAnimationFrame(animate);
+        }
+
+        // Rotar estadísticas
+        function rotateStats() {
+            currentStatIndex = (currentStatIndex + 1) % healthStats.length;
+            const stat = healthStats[currentStatIndex];
+            
+            loadingStat.style.opacity = '0';
+            setTimeout(() => {
+                loadingStat.innerHTML = `<strong>${stat.title}</strong>${stat.text}`;
+                loadingStat.style.opacity = '1';
+            }, 300);
+        }
+
+        // Detectar orientación
+        function checkOrientation() {
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            const isPortrait = window.innerHeight > window.innerWidth;
+            
+            if (isMobile && isPortrait && !loading.classList.contains('hidden')) {
+                rotatePhone.classList.add('show');
+            } else {
+                rotatePhone.classList.remove('show');
+            }
+        }
+
+        // Inicializar
+        async function init() {
+            try {
+                // Iniciar rotación de estadísticas
+                statRotationInterval = setInterval(rotateStats, 6000);
+                checkOrientation();
+                
+                // Cargar batch inicial
+                await preloadInitialBatch();
+                
+                // Configurar canvas con primera imagen
+                if (images[0]) {
+                    setupCanvas(images[0].width, images[0].height);
+                }
+                
+                // Marcar como inicializado
+                isInitialized = true;
+                
+                // Ocultar loading
+                clearInterval(statRotationInterval);
+                loading.classList.add('hidden');
+                
+                // Renderizar y animar
+                renderFrame(0);
+                animate();
+                updateOnScroll();
+                
+                // Precargar siguiente batch en background
+                setTimeout(() => {
+                    loadFramesInRange(config.preloadBatchSize);
+                }, 1000);
+                
+                console.log(`✅ ${config.preloadBatchSize} frames cargados inicialmente`);
+                console.log(`📊 Total frames: ${config.frameCount}`);
+                console.log(`🚀 Carga dinámica activada`);
+            } catch (error) {
+                console.error('Error inicializando:', error);
+                loadingStat.innerHTML = '<div>Error cargando las imágenes.</div>';
+            }
+        }
+
+        // Event listeners
+        let ticking = false;
+        window.addEventListener('scroll', () => {
+            if (!ticking) {
+                requestAnimationFrame(() => {
+                    updateOnScroll();
+                    ticking = false;
+                });
+                ticking = true;
+            }
+        }, { passive: true });
+
+        window.addEventListener('orientationchange', () => {
+            setTimeout(checkOrientation, 100);
+        });
+        
+        window.addEventListener('resize', () => {
+            checkOrientation();
+            if (images[0] && images[0].complete) {
+                setupCanvas(images[0].width, images[0].height);
+                renderFrame(currentFrame);
+            }
+        });
+
+        window.addEventListener('load', init);
+    </script>
+
+    
+</body>
+</html>
