@@ -51,7 +51,8 @@
 
     <script>       
         const config = {  
-            imagePath: './frames/frame{index}.jpg',
+            /*imagePath: './frames/frame{index}.jpg',*/
+            imagePath: 'https://res.cloudinary.com/dsdaa6slm/image/upload/frames/frame{index}.jpg',
             
             // Número total de frames/imágenes
             frameCount: 1649, // Cambia según cuántas imágenes tengas
@@ -61,7 +62,7 @@
             
             // LAZY LOADING CONFIG
             preloadBatchSize: 30,  // Cargar 50 frames al inicio
-            loadAheadRange: 20,    // Cargar 30 frames adelante del actual
+            loadAheadRange: 25,    // Cargar 30 frames adelante del actual
             loadBehindRange: 5    // Mantener 10 frames atrás
         };
 
