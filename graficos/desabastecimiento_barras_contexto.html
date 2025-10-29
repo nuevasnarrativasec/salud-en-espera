@@ -1,0 +1,222 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Desabastecimiento de medicamentos — versión moderna</title>
+<style>
+  :root{
+    --bg:#0a0a0b;
+    --card:#121316;
+    --muted:#8b90a1;
+    --text:#e9ecf1;
+    --ok:#2e7d32;        /* <10 regiones */
+    --warn:#f9a825;      /* 10–19 regiones */
+    --bad:#d32f2f;       /* >=20 regiones */
+    --bar-bg:#23252c;
+    --radius:14px;
+    --gap: clamp(10px, 2.5vmin, 18px);
+    --pad: clamp(12px, 3.2vmin, 20px);
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+    background: radial-gradient(1200px 600px at 60% -20%, #1b2230 0%, #0e1116 60%) fixed, var(--bg);
+    color:var(--text);
+    line-height:1.4;
+  }
+  .wrap{max-width:1000px;margin-inline:auto;padding: clamp(14px, 3.5vmin, 28px)}
+  header{display:flex;flex-wrap:wrap;gap:12px 16px;align-items:center;justify-content:space-between;margin-bottom:18px}
+  header h1{font-size:clamp(18px, 4.8vw, 28px);margin:0;letter-spacing:.2px}
+  .controls{display:flex;gap:10px;flex-wrap:wrap}
+  .control{
+    display:flex;align-items:center;gap:10px;
+    background:var(--card);border:1px solid #252934;border-radius:12px;padding:8px 10px
+  }
+  .control input,.control select{
+    background:transparent;border:none;color:var(--text);outline:none;font-size:14px;min-width:120px
+  }
+  .legend{display:flex;gap:10px;flex-wrap:wrap;margin:2px 0 10px}
+  .tag{display:inline-flex;align-items:center;gap:8px;font-size:12px;color:var(--muted)}
+  .dot{width:14px;height:10px;border-radius:999px;display:inline-block}
+  .dot.ok{background:var(--ok)}
+  .dot.warn{background:var(--warn)}
+  .dot.bad{background:var(--bad)}
+  .card{
+    background:var(--card);
+    border:1px solid #23262d;
+    border-radius: var(--radius);
+    padding: var(--pad);
+    box-shadow: 0 8px 24px rgba(0,0,0,.35);
+  }
+  .list{display:grid;gap:var(--gap)}
+  .item{display:grid;gap:10px}
+  .row{display:grid;grid-template-columns: 1fr auto;align-items:center;gap:10px}
+  .label{font-weight:700;letter-spacing:.2px}
+  .sub{color:var(--muted);font-size:12px;margin-top:2px}
+  .value{font-variant-numeric: tabular-nums; color:var(--muted);font-size:14px}
+  .bar{position:relative;width:100%;height:16px;background:var(--bar-bg);border-radius:999px;overflow:hidden}
+  .fill{position:absolute;inset:0;transform-origin:left center;scale:0 1;transition:scale .9s cubic-bezier(.2,.7,0,1)}
+  .fill.ok{background: linear-gradient(90deg, #3aa75f, var(--ok))}
+  .fill.warn{background: linear-gradient(90deg, #ffcf33, var(--warn))}
+  .fill.bad{background: linear-gradient(90deg, #ff6a6a, var(--bad))}
+  .ticks{position:absolute;inset:0;pointer-events:none}
+  .tick{position:absolute;top:0;bottom:0;width:1px;background:#2c2f37;opacity:.7}
+  .tick:nth-child(5n+1){background:#3b3f48;opacity:1}
+  .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+  footer{margin-top:18px;color:var(--muted);font-size:12px}
+  @media (max-width: 640px){
+    .row{grid-template-columns: 1fr auto}
+    .value{font-size:13px}
+    .bar{height:14px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Desabastecimiento de medicamentos a nivel nacional</h1>
+    <div class="controls">
+      <div class="control">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+        <input id="q" type="search" placeholder="Buscar medicamento o uso..." aria-label="Buscar" />
+      </div>
+      <div class="control">
+        <label for="sort" class="sr-only">Ordenar</label>
+        <select id="sort">
+          <option value="desc">Ordenar: más desabastecidos</option>
+          <option value="asc">Ordenar: menos desabastecidos</option>
+          <option value="az">Ordenar: A → Z</option>
+          <option value="za">Ordenar: Z → A</option>
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <div class="legend">
+    <span class="tag"><span class="dot ok"></span><span>&lt; 10 regiones</span></span>
+    <span class="tag"><span class="dot warn"></span><span>10–19 regiones</span></span>
+    <span class="tag"><span class="dot bad"></span><span>&ge; 20 regiones</span></span>
+  </div>
+
+  <div class="card">
+    <div id="list" class="list" role="list" aria-label="Lista de medicamentos"></div>
+  </div>
+
+  <footer>La barra representa 25 regiones. El tramo coloreado indica en cuántas regiones hay desabastecimiento.</footer>
+</div>
+
+<script>
+const TOTAL = 25;
+const rows = [
+  { medicamento: "NIFEDIPINO", des: 23, uso: "Hipertensión arterial, preeclampsia, crisis hipertensiva." },
+  { medicamento: "DIAZEPAM", des: 20, uso: "Ansiedad, insomnio, convulsiones, espasmos musculares." },
+  { medicamento: "ERGOMETRINA MALEATO MG", des: 19, uso: "Hemorragias postparto, contracciones uterinas tras el parto." },
+  { medicamento: "EPINEFRINA", des: 18, uso: "Anafilaxia, paro cardíaco, crisis asmáticas graves." },
+  { medicamento: "AZITROMICINA", des: 16, uso: "Infecciones respiratorias, otitis, faringitis, ITS." },
+  { medicamento: "CARBONATO DE CALCIO", des: 16, uso: "Deficiencia de calcio, prevención de osteoporosis." },
+  { medicamento: "DICLOXACILINA", des: 15, uso: "Infecciones de piel, vías respiratorias y huesos por bacterias." },
+  { medicamento: "OMEPRAZOL", des: 15, uso: "Gastritis, úlceras, reflujo gastroesofágico." },
+  { medicamento: "ERITROMICINA", des: 14, uso: "Infecciones respiratorias, de piel y oculares." },
+  { medicamento: "NITROFURANTOINA", des: 14, uso: "Infecciones urinarias." },
+  { medicamento: "LORATADINA", des: 13, uso: "Alergias, rinitis, urticaria, picazón." },
+  { medicamento: "PIRIDOXINA CLORHIDRATO", des: 13, uso: "Anemia, náuseas del embarazo, déficit de vitamina B6." },
+  { medicamento: "BENZOATO DE BENCILO", des: 12, uso: "Escabiosis (sarna), pediculosis (piojos)." },
+  { medicamento: "CLORFENAMINA MALEATO", des: 12, uso: "Alergias respiratorias y cutáneas, picazón." },
+  { medicamento: "SULFADIAZINA DE PLATA", des: 12, uso: "Quemaduras, heridas infectadas." },
+  { medicamento: "MISOPROSTOL MG", des: 9, uso: "Prevención de úlceras; uso obstétrico según protocolo médico." },
+  { medicamento: "POLIELECTROLITICA", des: 9, uso: "Deshidratación severa, rehidratación." },
+  { medicamento: "ALBENDAZOL", des: 8, uso: "Parásitos intestinales (lombrices, tenias)." },
+  { medicamento: "ATORVASTATINA", des: 8, uso: "Colesterol alto, prevención cardiovascular." },
+  { medicamento: "CLINDAMICINA", des: 8, uso: "Infecciones de piel, huesos, abdomen y genitales." },
+  { medicamento: "DEXAMETASONA", des: 8, uso: "Inflamaciones, alergias graves, COVID-19 severo." },
+  { medicamento: "FURAZOLIDONA", des: 8, uso: "Diarrea bacteriana, infecciones intestinales." },
+  { medicamento: "ORFENADRINA CITRATO", des: 8, uso: "Dolor muscular, contracturas, lumbalgia." },
+  { medicamento: "ZINC SULFATO DE ZN", des: 8, uso: "Déficit de zinc, soporte inmunológico, diarreas infantiles." },
+  { medicamento: "BENZATINA BENCILPENICILINA CON", des: 7, uso: "Faringitis, sífilis, infecciones bacterianas graves." },
+  { medicamento: "CEFTRIAXONA SODICA", des: 7, uso: "Infecciones respiratorias, urinarias, meningitis, gonorrea." },
+  { medicamento: "CIPROFLOXACINO", des: 7, uso: "Infecciones urinarias, respiratorias y gastrointestinales." },
+  { medicamento: "DIMENHIDRINATO", des: 7, uso: "Náuseas, mareos y vómitos por movimiento." },
+  { medicamento: "ESCOPOLAMINA N BUTILBROMURO", des: 7, uso: "Cólicos abdominales y dolor gastrointestinal." },
+  { medicamento: "FERROSO SULFATO", des: 7, uso: "Anemia por deficiencia de hierro." },
+  { medicamento: "HIERRO FE", des: 7, uso: "Anemia ferropénica, déficit de hierro." },
+  { medicamento: "PIRIDOXINA CLORHIDRATO", des: 5, uso: "Déficit de vitamina B6, náuseas, anemia." },
+  { medicamento: "ERITROMICINA", des: 5, uso: "Infecciones respiratorias, de piel y de garganta." },
+  { medicamento: "LORATADINA", des: 5, uso: "Rinitis alérgica, urticaria, picazón." },
+  { medicamento: "NITROFURANTOINA", des: 5, uso: "Infecciones urinarias." },
+  { medicamento: "MISOPROSTOL", des: 5, uso: "Úlceras gástricas; usos obstétricos bajo supervisión médica." }
+];
+
+const listEl = document.getElementById("list");
+
+function colorClass(value){
+  if (value >= 20) return "bad";
+  if (value >= 10) return "warn";
+  return "ok";
+}
+
+function render(data){
+  listEl.innerHTML = "";
+  data.forEach((d) => {
+    const pct = Math.max(0, Math.min(100, (d.des / TOTAL) * 100));
+    const item = document.createElement("div");
+    item.className = "item";
+    item.setAttribute("role","listitem");
+    item.innerHTML = `
+      <div class="row">
+        <div>
+          <div class="label">${d.medicamento}</div>
+          <div class="sub">${d.uso}</div>
+        </div>
+        <div class="value" aria-hidden="true">${d.des}/${TOTAL}</div>
+      </div>
+      <div class="bar" role="img" aria-label="${d.medicamento}: ${d.des} de ${TOTAL} regiones desabastecidas">
+        <div class="fill ${colorClass(d.des)}" style="width:${pct}%"></div>
+        <div class="ticks"></div>
+      </div>
+    `;
+    const ticks = item.querySelector(".ticks");
+    for(let i=1;i<TOTAL;i++){
+      const t = document.createElement("div");
+      t.className = "tick";
+      t.style.left = (i/TOTAL*100)+"%";
+      ticks.appendChild(t);
+    }
+    listEl.appendChild(item);
+    requestAnimationFrame(()=>{
+      item.querySelector(".fill").style.scale = "1 1";
+    });
+  });
+}
+
+function sortData(mode, data){
+  const arr = [...data];
+  if(mode==="asc") arr.sort((a,b)=> a.des - b.des || a.medicamento.localeCompare(b.medicamento));
+  else if(mode==="desc") arr.sort((a,b)=> b.des - a.des || a.medicamento.localeCompare(b.medicamento));
+  else if(mode==="az") arr.sort((a,b)=> a.medicamento.localeCompare(b.medicamento));
+  else if(mode==="za") arr.sort((a,b)=> b.medicamento.localeCompare(a.medicamento));
+  return arr;
+}
+
+const q = document.getElementById("q");
+const sortSel = document.getElementById("sort");
+let current = [...rows];
+
+function apply(){
+  const term = q.value.trim().toLowerCase();
+  const filtered = current.filter(r => (r.medicamento + " " + r.uso).toLowerCase().includes(term));
+  render(sortData(sortSel.value, filtered));
+}
+
+q.addEventListener("input", apply);
+sortSel.addEventListener("change", apply);
+
+// init
+current = sortData("desc", rows);
+apply();
+</script>
+</body>
+</html>

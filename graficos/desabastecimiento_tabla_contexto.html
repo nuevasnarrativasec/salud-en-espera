@@ -1,0 +1,139 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Desabastecimiento de medicamentos — estilo tabla</title>
+<style>
+  body {
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+    background: #fafafa;
+    color: #222;
+    margin: 0;
+    padding: 20px;
+  }
+  h2 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+  th {
+    text-align: left;
+    padding: 10px;
+    background: #f0f0f0;
+    border-bottom: 1px solid #ddd;
+  }
+  td {
+    padding: 8px 10px;
+    border-bottom: 1px solid #eee;
+    vertical-align: middle;
+  }
+  .name { font-weight: 700; }
+  .sub { color:#666; font-size:12px; margin-top:2px }
+  .bar-container {
+    width: 100%;
+    height: 14px;
+    background: #e5e5e5;
+    border-radius: 6px;
+    overflow: hidden;
+    position: relative;
+  }
+  .bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #5c9ded, #1976d2);
+  }
+  .value {
+    text-align: right;
+    color: #555;
+    font-variant-numeric: tabular-nums;
+    font-size: 13px;
+    width: 90px;
+    white-space: nowrap;
+  }
+  @media (max-width: 640px) {
+    th:nth-child(3),
+    td.value { display: none; }
+    table { font-size: 13px; }
+  }
+</style>
+</head>
+<body>
+  <h2>Desabastecimiento de medicamentos a nivel nacional</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Medicamento</th>
+        <th>Nº de regiones desabastecidas</th>
+        <th>% del total</th>
+      </tr>
+    </thead>
+    <tbody id="table-body"></tbody>
+  </table>
+
+<script>
+const TOTAL = 25;
+const data = [
+  { medicamento: "NIFEDIPINO", des: 23, uso: "Hipertensión arterial, preeclampsia, crisis hipertensiva." },
+  { medicamento: "DIAZEPAM", des: 20, uso: "Ansiedad, insomnio, convulsiones, espasmos musculares." },
+  { medicamento: "ERGOMETRINA MALEATO MG", des: 19, uso: "Hemorragias postparto, contracciones uterinas tras el parto." },
+  { medicamento: "EPINEFRINA", des: 18, uso: "Anafilaxia, paro cardíaco, crisis asmáticas graves." },
+  { medicamento: "AZITROMICINA", des: 16, uso: "Infecciones respiratorias, otitis, faringitis, ITS." },
+  { medicamento: "CARBONATO DE CALCIO", des: 16, uso: "Deficiencia de calcio, prevención de osteoporosis." },
+  { medicamento: "DICLOXACILINA", des: 15, uso: "Infecciones de piel, vías respiratorias y huesos por bacterias." },
+  { medicamento: "OMEPRAZOL", des: 15, uso: "Gastritis, úlceras, reflujo gastroesofágico." },
+  { medicamento: "ERITROMICINA", des: 14, uso: "Infecciones respiratorias, de piel y oculares." },
+  { medicamento: "NITROFURANTOINA", des: 14, uso: "Infecciones urinarias." },
+  { medicamento: "LORATADINA", des: 13, uso: "Alergias, rinitis, urticaria, picazón." },
+  { medicamento: "PIRIDOXINA CLORHIDRATO", des: 13, uso: "Anemia, náuseas del embarazo, déficit de vitamina B6." },
+  { medicamento: "BENZOATO DE BENCILO", des: 12, uso: "Escabiosis (sarna), pediculosis (piojos)." },
+  { medicamento: "CLORFENAMINA MALEATO", des: 12, uso: "Alergias respiratorias y cutáneas, picazón." },
+  { medicamento: "SULFADIAZINA DE PLATA", des: 12, uso: "Quemaduras, heridas infectadas." },
+  { medicamento: "MISOPROSTOL MG", des: 9, uso: "Prevención de úlceras; uso obstétrico según protocolo médico." },
+  { medicamento: "POLIELECTROLITICA", des: 9, uso: "Deshidratación severa, rehidratación." },
+  { medicamento: "ALBENDAZOL", des: 8, uso: "Parásitos intestinales (lombrices, tenias)." },
+  { medicamento: "ATORVASTATINA", des: 8, uso: "Colesterol alto, prevención cardiovascular." },
+  { medicamento: "CLINDAMICINA", des: 8, uso: "Infecciones de piel, huesos, abdomen y genitales." },
+  { medicamento: "DEXAMETASONA", des: 8, uso: "Inflamaciones, alergias graves, COVID-19 severo." },
+  { medicamento: "FURAZOLIDONA", des: 8, uso: "Diarrea bacteriana, infecciones intestinales." },
+  { medicamento: "ORFENADRINA CITRATO", des: 8, uso: "Dolor muscular, contracturas, lumbalgia." },
+  { medicamento: "ZINC SULFATO DE ZN", des: 8, uso: "Déficit de zinc, soporte inmunológico, diarreas infantiles." },
+  { medicamento: "BENZATINA BENCILPENICILINA CON", des: 7, uso: "Faringitis, sífilis, infecciones bacterianas graves." },
+  { medicamento: "CEFTRIAXONA SODICA", des: 7, uso: "Infecciones respiratorias, urinarias, meningitis, gonorrea." },
+  { medicamento: "CIPROFLOXACINO", des: 7, uso: "Infecciones urinarias, respiratorias y gastrointestinales." },
+  { medicamento: "DIMENHIDRINATO", des: 7, uso: "Náuseas, mareos y vómitos por movimiento." },
+  { medicamento: "ESCOPOLAMINA N BUTILBROMURO", des: 7, uso: "Cólicos abdominales y dolor gastrointestinal." },
+  { medicamento: "FERROSO SULFATO", des: 7, uso: "Anemia por deficiencia de hierro." },
+  { medicamento: "HIERRO FE", des: 7, uso: "Anemia ferropénica, déficit de hierro." },
+  { medicamento: "PIRIDOXINA CLORHIDRATO", des: 5, uso: "Déficit de vitamina B6, náuseas, anemia." },
+  { medicamento: "ERITROMICINA", des: 5, uso: "Infecciones respiratorias, de piel y de garganta." },
+  { medicamento: "LORATADINA", des: 5, uso: "Rinitis alérgica, urticaria, picazón." },
+  { medicamento: "NITROFURANTOINA", des: 5, uso: "Infecciones urinarias." },
+  { medicamento: "MISOPROSTOL", des: 5, uso: "Úlceras gástricas; usos obstétricos bajo supervisión médica." }
+];
+
+const tbody = document.getElementById("table-body");
+data.forEach(d => {
+  const pct = ((d.des / TOTAL) * 100).toFixed(0);
+  const tr = document.createElement("tr");
+  tr.innerHTML = `
+    <td>
+      <div class="name">${d.medicamento}</div>
+      <div class="sub">${d.uso}</div>
+    </td>
+    <td>
+      <div class="bar-container" role="img" aria-label="${d.medicamento}: ${d.des} de ${TOTAL} regiones desabastecidas">
+        <div class="bar-fill" style="width:${pct}%"></div>
+      </div>
+    </td>
+    <td class="value">${d.des}/${TOTAL} (${pct}%)</td>
+  `;
+  tbody.appendChild(tr);
+});
+</script>
+</body>
+</html>
