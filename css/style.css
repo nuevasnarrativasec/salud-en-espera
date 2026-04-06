@@ -43,6 +43,7 @@ body {
 
         /* El video */
         #scrollVideo {
+            background-color: #faf6eb;
             width: 100%;
             height: 100%;
             object-fit: contain;
