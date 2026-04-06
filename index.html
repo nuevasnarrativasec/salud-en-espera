@@ -13,13 +13,18 @@
 
     <!-- Rotate phone message for mobile portrait -->
     <div class="rotate-phone" id="rotatePhone">
-        <div class="rotate-icon">📱</div>
+        <div class="rotate-icon">
+            <img src="./img/rotar-movil.png" alt="" width="100%">
+        </div>
         <h2>Mejor experiencia en horizontal</h2>
         <p>Por favor, gira tu dispositivo para apreciar mejor la animación</p>
     </div>
 
     <!-- Loading indicator with rotating stats -->
     <div class="loading" id="loading">
+        <!-- Dos capas de fondo para crossfade fluido -->
+        <div class="loading-bg" id="loadingBgA"></div>
+        <div class="loading-bg" id="loadingBgB"></div>
         <div class="loading-content">
             <div class="loading-stat" id="loadingStat">
                 <strong>Primer nivel debilitado</strong>
@@ -70,19 +75,27 @@
         const healthStats = [
             {
                 title: 'Primer nivel debilitado',
-                text: 'Más del 95% de los establecimientos de salud del primer nivel operan con capacidad instalada inadecuada'
+                text: 'Más del 95% de los establecimientos de salud del primer nivel operan con capacidad instalada inadecuada',
+                image: './img/bg-stats-1.jpg',
+                imageMobile: './img/bg-stats-1-movil.jpg'
             },
             {
                 title: 'Cobertura insuficiente',
-                text: 'Se requieren más de 2,000 nuevos centros de promoción y vigilancia comunal; el 74% aún no se implementa'
+                text: 'Se requieren más de 2,000 nuevos centros de promoción y vigilancia comunal; el 74% aún no se implementa',
+                image: './img/bg-stats-2.jpg',
+                imageMobile: './img/bg-stats-2-movil.jpg'
             },
             {
                 title: 'Hospitales saturados',
-                text: '92% de los hospitales presentan infraestructura inadecuada y un 34% está aún por implementarse'
+                text: '92% de los hospitales presentan infraestructura inadecuada y un 34% está aún por implementarse',
+                image: './img/bg-stats-3.jpg',
+                imageMobile: './img/bg-stats-3-movil.jpg'
             },
             {
                 title: 'Medicamentos esenciales faltantes',
-                text: 'Desde antihipertensivos hasta oncológicos, el desabastecimiento es recurrente'
+                text: 'Desde antihipertensivos hasta oncológicos, el desabastecimiento es recurrente',
+                image: './img/bg-stats-4.jpg',
+                imageMobile: './img/bg-stats-4-movil.jpg'
             }
         ];
 
@@ -220,25 +233,76 @@
             }
         }
 
-        // Loop de animación
-        function animate() {
-            const diff = targetFrame - currentFrame;
-            currentFrame += diff * 0.1;
-            
-            renderFrame(currentFrame);
-            requestAnimationFrame(animate);
+        // Crossfade de fondo entre las dos capas
+        const bgA = document.getElementById('loadingBgA');
+        const bgB = document.getElementById('loadingBgB');
+        let activeBg = 'A'; // capa actualmente visible
+
+        function updateStatBackground(stat, immediate = false) {
+            const isMobile = window.innerWidth < 768;
+            const imgUrl = isMobile ? stat.imageMobile : stat.image;
+
+            if (immediate) {
+                // Primera carga: sin animación
+                bgA.style.backgroundImage = `url('${imgUrl}')`;
+                bgA.style.opacity = '1';
+                bgB.style.opacity = '0';
+                activeBg = 'A';
+                return;
+            }
+
+            // Precargar la imagen antes de hacer el crossfade
+            const preload = new window.Image();
+            preload.onload = () => {
+                if (activeBg === 'A') {
+                    // Mostrar B encima con la nueva imagen
+                    bgB.style.backgroundImage = `url('${imgUrl}')`;
+                    bgB.style.opacity = '1';
+                    // Cuando B termina de aparecer, ocultar A
+                    setTimeout(() => {
+                        bgA.style.opacity = '0';
+                        activeBg = 'B';
+                    }, 500);
+                } else {
+                    bgA.style.backgroundImage = `url('${imgUrl}')`;
+                    bgA.style.opacity = '1';
+                    setTimeout(() => {
+                        bgB.style.opacity = '0';
+                        activeBg = 'A';
+                    }, 500);
+                }
+            };
+            preload.onerror = () => {
+                // Si falla la carga, igual intentar mostrar
+                preload.onload();
+            };
+            preload.src = imgUrl;
         }
 
-        // Rotar estadísticas
+        // Rotar estadísticas (una sola definición, correcta)
         function rotateStats() {
             currentStatIndex = (currentStatIndex + 1) % healthStats.length;
             const stat = healthStats[currentStatIndex];
-            
+
+            // Fade out texto
             loadingStat.style.opacity = '0';
+            loadingStat.style.transform = 'translateY(12px)';
+
+            // Crossfade de imagen y fade in de texto
+            updateStatBackground(stat);
             setTimeout(() => {
                 loadingStat.innerHTML = `<strong>${stat.title}</strong>${stat.text}`;
                 loadingStat.style.opacity = '1';
-            }, 300);
+                loadingStat.style.transform = 'translateY(0)';
+            }, 350);
+        }
+
+        // Loop de animación suavizado
+        function animate() {
+            // Interpolar suavemente hacia el frame objetivo
+            currentFrame += (targetFrame - currentFrame) * 0.12;
+            renderFrame(currentFrame);
+            requestAnimationFrame(animate);
         }
 
         // Detectar orientación
@@ -256,6 +320,7 @@
         // Inicializar
         async function init() {
             try {
+                updateStatBackground(healthStats[0], true);
                 // Iniciar rotación de estadísticas
                 statRotationInterval = setInterval(rotateStats, 6000);
                 checkOrientation();
