@@ -4,22 +4,50 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Salud en Espera</title>
-
     <link rel="stylesheet" href="./css/style.css?v6">
-
-    <!-- Scrolly Video Library -->
-    <script src="https://cdn.jsdelivr.net/npm/scrolly-video@latest/dist/scrolly-video.js"></script>
 </head>
 <body>
 
     <!-- Progress Bar -->
     <div class="progress-bar" id="progressBar"></div>
 
+    <!-- Loading -->
+    <div class="loading" id="loading">
+        <div class="loading-content">
+            <div class="loading-stat" id="loadingStat">
+                <strong>Cargando</strong>Preparando la experiencia…
+            </div>
+            <div class="loading-details" id="loadingDetails">Descargando video…</div>
+            <div class="loading-bar">
+                <div class="loading-progress" id="loadingProgress"></div>
+            </div>
+        </div>
+    </div>
+
     <!-- Contenedor del video con scroll -->
-    <div class="video-scroll-container">
+    <div class="video-scroll-container" id="scrollContainer">
         <div class="video-sticky">
-            <video id="scrollVideo" muted playsinline preload="auto">
-                <source src="./video/video-intro.mp4" type="video/mp4">
+            <!--
+                CLOUDINARY:
+                  - sp_auto/       → activa HLS/DASH streaming adaptativo
+                  - q_auto         → calidad automática según red
+                  - vc_h264        → codec compatible con todos los browsers
+                  - preload="none" → no descarga nada hasta que lo pedimos
+                  
+                Reemplaza YOUR_CLOUD_NAME y YOUR_VIDEO_ID con tus datos reales.
+                Ejemplo: https://res.cloudinary.com/dsdaa6slm/video/upload/sp_auto,q_auto,vc_h264/intro-salud.mp4
+            -->
+            <video
+                id="scrollVideo"
+                muted
+                playsinline
+                preload="metadata"
+                crossorigin="anonymous"
+            >
+                <source
+                    src="https://res.cloudinary.com/dvcf0htuf/video/upload/q_auto,vc_h264/v1775504906/video-intro_bmvmnq.mp4"
+                    type="video/mp4"
+                >
                 Tu navegador no soporta video HTML5.
             </video>
         </div>
@@ -27,77 +55,203 @@
 
 
     <script>
-        const video = document.getElementById('scrollVideo');
-        const container = document.querySelector('.video-scroll-container');
-        
-        // Variables para suavizado
-        let targetTime = 0;
-        let currentTime = 0;
-        const smoothing = 0.1; // Ajusta entre 0.05 (muy suave) y 0.3 (más directo)
-        
-        // Función principal de scroll
-        function updateVideo() {
-            const rect = container.getBoundingClientRect();
+        /* ─────────────────────────────────────────────
+           CONFIGURACIÓN
+        ───────────────────────────────────────────── */
+        const CONFIG = {
+            // Tiempo mínimo entre seeks (ms). Sube si el scrubbing va lento.
+            seekThrottle: 80,
+
+            // Umbral mínimo de cambio en segundos para hacer un seek.
+            // Evita seeks innecesarios cuando el scroll apenas se mueve.
+            seekThreshold: 0.08,
+
+            // Cuánto buffer pre-cargar al inicio antes de mostrar la experiencia (segundos)
+            requiredBuffer: 3,
+        };
+
+        /* ─────────────────────────────────────────────
+           REFERENCIAS DOM
+        ───────────────────────────────────────────── */
+        const video          = document.getElementById('scrollVideo');
+        const container      = document.getElementById('scrollContainer');
+        const progressBar    = document.getElementById('progressBar');
+        const loading        = document.getElementById('loading');
+        const loadingDetails = document.getElementById('loadingDetails');
+        const loadingProgress = document.getElementById('loadingProgress');
+
+        /* ─────────────────────────────────────────────
+           ESTADO
+        ───────────────────────────────────────────── */
+        let targetTime    = 0;
+        let isSeeking     = false;   // el video está procesando un seek
+        let pendingSeek   = null;    // seek pedido mientras isSeeking=true
+        let lastSeekTime  = 0;       // timestamp del último seek (throttle)
+        let isReady       = false;   // experiencia lista para mostrar
+        let animRunning   = false;
+
+        /* ─────────────────────────────────────────────
+           SEEK INTELIGENTE
+           - Throttle: no más de 1 seek cada CONFIG.seekThrottle ms
+           - Si el video sigue en seeking, encola el pedido
+           - Cancela seeks redundantes (delta < threshold)
+        ───────────────────────────────────────────── */
+        function requestSeek(time) {
+            const now = performance.now();
+
+            // Guardar siempre el tiempo más reciente pedido
+            pendingSeek = time;
+
+            if (isSeeking) return; // se procesará en el evento 'seeked'
+            if (now - lastSeekTime < CONFIG.seekThrottle) return;
+
+            const delta = Math.abs(video.currentTime - pendingSeek);
+            if (delta < CONFIG.seekThreshold) {
+                pendingSeek = null;
+                return;
+            }
+
+            doSeek(pendingSeek);
+        }
+
+        function doSeek(time) {
+            isSeeking  = true;
+            pendingSeek = null;
+            lastSeekTime = performance.now();
+            video.currentTime = Math.max(0, Math.min(video.duration || 0, time));
+        }
+
+        // Cuando el seek termina, procesar el pendiente si hay uno
+        video.addEventListener('seeked', () => {
+            isSeeking = false;
+            if (pendingSeek !== null) {
+                const delta = Math.abs(video.currentTime - pendingSeek);
+                if (delta >= CONFIG.seekThreshold) {
+                    doSeek(pendingSeek);
+                } else {
+                    pendingSeek = null;
+                }
+            }
+        });
+
+        /* ─────────────────────────────────────────────
+           CALCULAR PROGRESO DEL SCROLL → TIEMPO DE VIDEO
+        ───────────────────────────────────────────── */
+        function getScrollProgress() {
+            const rect            = container.getBoundingClientRect();
             const containerHeight = container.offsetHeight;
-            const windowHeight = window.innerHeight;
-            
-            // Calcular el progreso del scroll
-            // Cuando rect.top = 0, estamos al inicio
-            // Cuando rect.top = windowHeight - containerHeight, estamos al final
+            const windowHeight    = window.innerHeight;
             const scrollableHeight = containerHeight - windowHeight;
-            const scrolled = -rect.top;
-            const progress = Math.max(0, Math.min(1, scrolled / scrollableHeight));
-            
-            // Calcular el tiempo objetivo del video
+            const scrolled        = -rect.top;
+            return Math.max(0, Math.min(1, scrolled / scrollableHeight));
+        }
+
+        function updateFromScroll() {
+            const progress = getScrollProgress();
+            progressBar.style.width = (progress * 100) + '%';
+
             if (video.duration) {
                 targetTime = video.duration * progress;
+                requestSeek(targetTime);
             }
         }
-        
-        // Loop de animación suave
-        function animate() {
-            // Interpolar suavemente hacia el tiempo objetivo
-            currentTime += (targetTime - currentTime) * smoothing;
-            
-            // Actualizar el video solo si hay diferencia significativa
-            if (Math.abs(video.currentTime - currentTime) > 0.1) {
-                video.currentTime = currentTime;
+
+        /* ─────────────────────────────────────────────
+           LOOP DE ANIMACIÓN
+           Solo corre para actualizar la barra de progreso
+           si el usuario hace scroll muy rápido.
+           El seek real lo maneja requestSeek().
+        ───────────────────────────────────────────── */
+        function startAnimLoop() {
+            if (animRunning) return;
+            animRunning = true;
+
+            function loop() {
+                if (!isReady) { requestAnimationFrame(loop); return; }
+
+                const progress = getScrollProgress();
+                progressBar.style.width = (progress * 100) + '%';
+
+                if (video.duration) {
+                    const t = video.duration * progress;
+                    // Solo pedir seek si hay diferencia real
+                    if (Math.abs(t - (pendingSeek ?? video.currentTime)) > CONFIG.seekThreshold) {
+                        requestSeek(t);
+                    }
+                }
+
+                requestAnimationFrame(loop);
             }
-            
-            requestAnimationFrame(animate);
+            requestAnimationFrame(loop);
         }
-        
-        // Event listener para scroll
+
+        /* ─────────────────────────────────────────────
+           LOADING: mostrar progreso de buffer inicial
+        ───────────────────────────────────────────── */
+        function checkBuffer() {
+            if (!video.duration) return;
+
+            // Cuánto hay en buffer desde el inicio
+            let buffered = 0;
+            for (let i = 0; i < video.buffered.length; i++) {
+                if (video.buffered.start(i) <= 0.1) {
+                    buffered = video.buffered.end(i);
+                    break;
+                }
+            }
+
+            const pct = Math.min(100, (buffered / CONFIG.requiredBuffer) * 100);
+            loadingProgress.style.width = pct + '%';
+            loadingDetails.textContent  = `Buffering… ${buffered.toFixed(1)}s / ${CONFIG.requiredBuffer}s`;
+
+            if (buffered >= CONFIG.requiredBuffer) {
+                showExperience();
+            } else {
+                setTimeout(checkBuffer, 300);
+            }
+        }
+
+        function showExperience() {
+            isReady = true;
+            loading.classList.add('hidden');
+            updateFromScroll();
+        }
+
+        /* ─────────────────────────────────────────────
+           INIT
+        ───────────────────────────────────────────── */
+        video.addEventListener('loadedmetadata', () => {
+            console.log(`✅ Metadata cargada | Duración: ${video.duration.toFixed(2)}s`);
+            loadingDetails.textContent = 'Descargando buffer inicial…';
+            // Forzar inicio de descarga del primer segmento
+            video.currentTime = 0;
+            checkBuffer();
+            startAnimLoop();
+        });
+
+        // Por si el metadata ya estaba en caché
+        if (video.readyState >= 1) {
+            video.dispatchEvent(new Event('loadedmetadata'));
+        }
+
+        /* ─────────────────────────────────────────────
+           EVENTOS
+        ───────────────────────────────────────────── */
         let ticking = false;
         window.addEventListener('scroll', () => {
             if (!ticking) {
                 requestAnimationFrame(() => {
-                    updateVideo();
+                    if (isReady) updateFromScroll();
                     ticking = false;
                 });
                 ticking = true;
             }
         }, { passive: true });
-        
-        // Cargar metadata y empezar
-        video.addEventListener('loadedmetadata', () => {
-            console.log('Video cargado:', video.duration, 'segundos');
-            updateVideo();
-            animate();
-        });
-        
-        // Por si el metadata ya está cargado
-        if (video.readyState >= 1) {
-            updateVideo();
-            animate();
-        }
-        
-        // Actualizar en resize
+
         window.addEventListener('resize', () => {
-            updateVideo();
+            if (isReady) updateFromScroll();
         });
     </script>
 
-    
 </body>
 </html>
