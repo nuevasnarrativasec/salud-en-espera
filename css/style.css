@@ -25,7 +25,7 @@ body {
             /* AJUSTA ESTE VALOR para controlar la velocidad */
             /* 500vh = rápido, 1000vh = moderado, 2000vh = lento */
             height: 2500vh;
-            background: #000;
+            background: #faf6eb;
         }
 
         /* Video sticky que se mantiene fijo */
@@ -34,7 +34,7 @@ body {
             top: 0;
             width: 100%;
             height: 100vh;
-            background: #000;
+            background: #faf6eb;
             display: flex;
             align-items: center;
             justify-content: center;
