@@ -14,6 +14,34 @@ html {
     -moz-osx-font-smoothing: grayscale;
 }
 
+@font-face {
+    font-family: 'Isidora Light';
+    src: url('../fonts/Isidora-Light.woff2') format('woff2'),
+        url('../fonts/Isidora-Light.woff') format('woff');
+    font-weight: 300;
+}
+
+@font-face {
+    font-family: 'Isidora Medium';
+    src: url('../fonts/Isidora-Medium.woff2') format('woff2'),
+        url('../fonts/Isidora-Medium.woff') format('woff');
+    font-weight: 500;
+}
+
+@font-face {
+    font-family: 'Isidora Bold';
+    src: url('../fonts/Isidora-Bold.woff2') format('woff2'),
+        url('../fonts/Isidora-Bold.woff') format('woff');
+    font-weight: bold;
+}
+
+@font-face {
+    font-family: 'Isidora Black';
+    src: url('../fonts/Isidora-Black.woff2') format('woff2'),
+        url('../fonts/Isidora-Black.woff') format('woff');
+    font-weight: 900;
+}
+
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
     overflow-x: hidden;
@@ -79,8 +107,6 @@ body {
             max-height: 100%;
             display: block;
         }
-
-
         
         /* Animations */
         @keyframes fadeInUp {
@@ -336,6 +362,93 @@ body {
             z-index: 100;
             width: 0%;
         }
+
+section.bajada{
+    background-color: #000;
+    padding: 60px 0;
+}   
+    .ctn-bajada {
+        max-width: 600px;
+        margin: 0 auto;
+        text-align: left;
+    }    
+        .ctn-bajada h2{
+            border-bottom: #47D7EF 5px solid;
+            color: #fff;
+            font: 4.5rem/.9 "ivypresto-headline";
+            font-weight: 500;
+            padding-bottom: 10px;
+            position: relative;
+            width: fit-content;
+        }
+            .ctn-bajada h2 span{
+                color: #F04F25;
+                display: block;
+                font-weight: 900;
+            }
+            .ctn-bajada i{
+                background: url('../img/marca-titulo.png') no-repeat center;
+                background-size: 100%;
+                bottom: -25px;                
+                content: '';
+                height: 105px;
+                left: -15px;
+                position: absolute;
+                width: 245px;
+            }
+        .ctn-bajada p{
+            border-bottom: 1px solid #4d4d4d;
+            border-top: 1px solid #4d4d4d;            
+            color: #fff;
+            font: 1.1rem / 1.3 'Isidora Medium';
+            line-height: 1.6;
+            margin-top: 3rem;            
+            padding: 30px 0;
+        }
+            .ctn-bajada p span{
+                display: block;
+                font-family: 'Isidora Bold';
+                text-transform: uppercase;
+            }
+
+section.section-title{
+    margin: 50px auto;
+}
+    .box-title{
+
+    }
+        .ctn-box-title{
+            margin: 0 auto;
+            max-width: 900px;            
+        }
+            .ctn-box-title h3{
+                font: 3rem/.9 "ivypresto-headline";
+                font-weight: 400;
+            }
+        .cian{
+            background-color: #47D7EF;
+            padding: 10px 0;
+        }
+            .cian h3{                
+                display: inline-block;
+                font-weight: 800;
+                vertical-align: bottom;
+            }
+            .cian h4{
+                display: inline-block;
+                font: 1.1rem / 1.3 'Isidora Light';
+                position: relative;
+                vertical-align: bottom;
+            }
+                .cian h4 span{
+                    font-family: 'Isidora Bold';
+                }
+                img.marca-seccion-1{
+                    bottom: -15px;
+                    position: absolute;
+                    right: -25px;
+                    width: 140px;
+                }
 
 
 
