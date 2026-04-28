@@ -11,11 +11,15 @@
     <!-- Progress Bar -->
     <div class="progress-bar" id="progressBar"></div>
 
-    <!-- Loading -->
+    <!-- Loading indicator with rotating stats -->
     <div class="loading" id="loading">
+        <!-- Dos capas de fondo para crossfade fluido -->
+        <div class="loading-bg" id="loadingBgA"></div>
+        <div class="loading-bg" id="loadingBgB"></div>
         <div class="loading-content">
             <div class="loading-stat" id="loadingStat">
-                <strong>Cargando</strong>Preparando la experiencia…
+                <strong>Primer nivel debilitado</strong>
+                Más del 95% de los establecimientos de salud del primer nivel operan con capacidad instalada inadecuada
             </div>
             <div class="loading-details" id="loadingDetails">Descargando video…</div>
             <div class="loading-bar">
@@ -73,22 +77,58 @@
         /* ─────────────────────────────────────────────
            REFERENCIAS DOM
         ───────────────────────────────────────────── */
-        const video          = document.getElementById('scrollVideo');
-        const container      = document.getElementById('scrollContainer');
-        const progressBar    = document.getElementById('progressBar');
-        const loading        = document.getElementById('loading');
-        const loadingDetails = document.getElementById('loadingDetails');
+        const video           = document.getElementById('scrollVideo');
+        const container       = document.getElementById('scrollContainer');
+        const progressBar     = document.getElementById('progressBar');
+        const loading         = document.getElementById('loading');
+        const loadingStat     = document.getElementById('loadingStat');
+        const loadingDetails  = document.getElementById('loadingDetails');
         const loadingProgress = document.getElementById('loadingProgress');
+        const bgA             = document.getElementById('loadingBgA');
+        const bgB             = document.getElementById('loadingBgB');
+
+        /* ─────────────────────────────────────────────
+           ESTADÍSTICAS DE SALUD
+        ───────────────────────────────────────────── */
+        const healthStats = [
+            {
+                title: 'Primer nivel debilitado',
+                text: 'Más del 95% de los establecimientos de salud del primer nivel operan con capacidad instalada inadecuada',
+                image: './img/bg-stats-1.gif',
+                imageMobile: './img/bg-stats-1-movil.gif'
+            },
+            {
+                title: 'Cobertura insuficiente',
+                text: 'Se requieren más de 2,000 nuevos centros de promoción y vigilancia comunal; el 74% aún no se implementa',
+                image: './img/bg-stats-2.gif',
+                imageMobile: './img/bg-stats-2-movil.gif'
+            },
+            {
+                title: 'Hospitales saturados',
+                text: '92% de los hospitales presentan infraestructura inadecuada y un 34% está aún por implementarse',
+                image: './img/bg-stats-3.gif',
+                imageMobile: './img/bg-stats-3-movil.gif'
+            },
+            {
+                title: 'Medicamentos esenciales faltantes',
+                text: 'Desde antihipertensivos hasta oncológicos, el desabastecimiento es recurrente',
+                image: './img/bg-stats-4.gif',
+                imageMobile: './img/bg-stats-4-movil.jpg'
+            }
+        ];
 
         /* ─────────────────────────────────────────────
            ESTADO
         ───────────────────────────────────────────── */
-        let targetTime    = 0;
-        let isSeeking     = false;   // el video está procesando un seek
-        let pendingSeek   = null;    // seek pedido mientras isSeeking=true
-        let lastSeekTime  = 0;       // timestamp del último seek (throttle)
-        let isReady       = false;   // experiencia lista para mostrar
-        let animRunning   = false;
+        let targetTime        = 0;
+        let isSeeking         = false;
+        let pendingSeek       = null;
+        let lastSeekTime      = 0;
+        let isReady           = false;
+        let animRunning       = false;
+        let currentStatIndex  = 0;
+        let statRotationInterval;
+        let activeBg          = 'A';
 
         /* ─────────────────────────────────────────────
            SEEK INTELIGENTE
@@ -186,6 +226,52 @@
         }
 
         /* ─────────────────────────────────────────────
+           CROSSFADE DE FONDO Y ROTACIÓN DE STATS
+        ───────────────────────────────────────────── */
+        function updateStatBackground(stat, immediate = false) {
+            const isMobile = window.innerWidth < 768;
+            const imgUrl = isMobile ? stat.imageMobile : stat.image;
+
+            if (immediate) {
+                bgA.style.backgroundImage = `url('${imgUrl}')`;
+                bgA.style.opacity = '1';
+                bgB.style.opacity = '0';
+                activeBg = 'A';
+                return;
+            }
+
+            const preload = new window.Image();
+            preload.onload = () => {
+                if (activeBg === 'A') {
+                    bgB.style.backgroundImage = `url('${imgUrl}')`;
+                    bgB.style.opacity = '1';
+                    setTimeout(() => { bgA.style.opacity = '0'; activeBg = 'B'; }, 500);
+                } else {
+                    bgA.style.backgroundImage = `url('${imgUrl}')`;
+                    bgA.style.opacity = '1';
+                    setTimeout(() => { bgB.style.opacity = '0'; activeBg = 'A'; }, 500);
+                }
+            };
+            preload.onerror = () => preload.onload();
+            preload.src = imgUrl;
+        }
+
+        function rotateStats() {
+            currentStatIndex = (currentStatIndex + 1) % healthStats.length;
+            const stat = healthStats[currentStatIndex];
+
+            loadingStat.style.opacity = '0';
+            loadingStat.style.transform = 'translateY(12px)';
+
+            updateStatBackground(stat);
+            setTimeout(() => {
+                loadingStat.innerHTML = `<strong>${stat.title}</strong>${stat.text}`;
+                loadingStat.style.opacity = '1';
+                loadingStat.style.transform = 'translateY(0)';
+            }, 350);
+        }
+
+        /* ─────────────────────────────────────────────
            LOADING: mostrar progreso de buffer inicial
         ───────────────────────────────────────────── */
         function checkBuffer() {
@@ -213,6 +299,7 @@
 
         function showExperience() {
             isReady = true;
+            clearInterval(statRotationInterval);
             loading.classList.add('hidden');
             updateFromScroll();
         }
@@ -223,11 +310,14 @@
         video.addEventListener('loadedmetadata', () => {
             console.log(`✅ Metadata cargada | Duración: ${video.duration.toFixed(2)}s`);
             loadingDetails.textContent = 'Descargando buffer inicial…';
-            // Forzar inicio de descarga del primer segmento
             video.currentTime = 0;
             checkBuffer();
             startAnimLoop();
         });
+
+        // Iniciar fondo y rotación de stats al cargar la página
+        updateStatBackground(healthStats[0], true);
+        statRotationInterval = setInterval(rotateStats, 6000);
 
         // Por si el metadata ya estaba en caché
         if (video.readyState >= 1) {
