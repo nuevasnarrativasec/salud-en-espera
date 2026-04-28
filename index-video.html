@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Salud en Espera</title>
     <link rel="stylesheet" href="./css/style.css?v8">
+    
 </head>
 <body>
 
@@ -28,19 +29,9 @@
         </div>
     </div>
 
-    <!-- Contenedor del video con scroll -->
+    <!-- ── HERO: Contenedor del video con scroll ───────────── -->
     <div class="video-scroll-container" id="scrollContainer">
         <div class="video-sticky">
-            <!--
-                CLOUDINARY:
-                  - sp_auto/       → activa HLS/DASH streaming adaptativo
-                  - q_auto         → calidad automática según red
-                  - vc_h264        → codec compatible con todos los browsers
-                  - preload="none" → no descarga nada hasta que lo pedimos
-                  
-                Reemplaza YOUR_CLOUD_NAME y YOUR_VIDEO_ID con tus datos reales.
-                Ejemplo: https://res.cloudinary.com/dsdaa6slm/video/upload/sp_auto,q_auto,vc_h264/intro-salud.mp4
-            -->
             <video
                 id="scrollVideo"
                 muted
@@ -57,20 +48,65 @@
         </div>
     </div>
 
+    <!-- ══════════════════════════════════════════════════════
+         ESSALUD · GRUPOS ETÁREOS
+    ══════════════════════════════════════════════════════ -->
+    <section class="es-section" id="esSection">
+        <div class="es-sticky">
 
+            <header class="es-header">
+                <div>
+                    <span class="es-eyebrow">EsSalud · Lima 2023</span>
+                    <h2 class="es-title">Grupos etáreos atendidos</h2>
+                </div>
+                <span class="es-note">Cada figura ≈ 10 000 personas</span>
+            </header>
+
+            <div class="es-panels">
+
+                <!-- LEFT: pacientes -->
+                <div class="panel-patients" id="esPatientPanel">
+                    <div class="panel-subhdr">
+                        <span class="panel-name">Atendidos</span>
+                        <span class="panel-big-num">853,028</span>
+                    </div>
+                    <div class="es-stage" id="esStage"></div>
+                </div>
+
+                <!-- RIGHT: atenciones -->
+                <div class="panel-atenciones">
+                    <div class="at-name">Atenciones</div>
+                    <div class="at-total">1,749,009</div>
+                    <div class="at-bars" id="esAtBars"></div>
+                </div>
+
+            </div>
+
+            <!-- Scroll hint -->
+            <div class="es-scroll-hint" id="esScrollHint">
+                <svg width="11" height="11" viewBox="0 0 11 11" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M5.5 1v9M5.5 10 2.5 7M5.5 10 8.5 7" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                continúa desplazando
+            </div>
+
+            <!-- Group tracker dots -->
+            <div class="group-track" id="esGroupTrack"></div>
+
+        </div>
+    </section>
+
+
+    <!-- ══════════════════════════════════════════════════════
+         SCRIPT · HERO VIDEO (scroll scrubbing)
+    ══════════════════════════════════════════════════════ -->
     <script>
         /* ─────────────────────────────────────────────
            CONFIGURACIÓN
         ───────────────────────────────────────────── */
         const CONFIG = {
-            // Tiempo mínimo entre seeks (ms). Sube si el scrubbing va lento.
             seekThrottle: 80,
-
-            // Umbral mínimo de cambio en segundos para hacer un seek.
-            // Evita seeks innecesarios cuando el scroll apenas se mueve.
             seekThreshold: 0.08,
-
-            // Cuánto buffer pre-cargar al inicio antes de mostrar la experiencia (segundos)
             requiredBuffer: 3,
         };
 
@@ -132,64 +168,46 @@
 
         /* ─────────────────────────────────────────────
            SEEK INTELIGENTE
-           - Throttle: no más de 1 seek cada CONFIG.seekThrottle ms
-           - Si el video sigue en seeking, encola el pedido
-           - Cancela seeks redundantes (delta < threshold)
         ───────────────────────────────────────────── */
         function requestSeek(time) {
             const now = performance.now();
-
-            // Guardar siempre el tiempo más reciente pedido
             pendingSeek = time;
-
-            if (isSeeking) return; // se procesará en el evento 'seeked'
+            if (isSeeking) return;
             if (now - lastSeekTime < CONFIG.seekThrottle) return;
-
             const delta = Math.abs(video.currentTime - pendingSeek);
-            if (delta < CONFIG.seekThreshold) {
-                pendingSeek = null;
-                return;
-            }
-
+            if (delta < CONFIG.seekThreshold) { pendingSeek = null; return; }
             doSeek(pendingSeek);
         }
 
         function doSeek(time) {
-            isSeeking  = true;
-            pendingSeek = null;
+            isSeeking    = true;
+            pendingSeek  = null;
             lastSeekTime = performance.now();
             video.currentTime = Math.max(0, Math.min(video.duration || 0, time));
         }
 
-        // Cuando el seek termina, procesar el pendiente si hay uno
         video.addEventListener('seeked', () => {
             isSeeking = false;
             if (pendingSeek !== null) {
                 const delta = Math.abs(video.currentTime - pendingSeek);
-                if (delta >= CONFIG.seekThreshold) {
-                    doSeek(pendingSeek);
-                } else {
-                    pendingSeek = null;
-                }
+                if (delta >= CONFIG.seekThreshold) doSeek(pendingSeek);
+                else pendingSeek = null;
             }
         });
 
         /* ─────────────────────────────────────────────
-           CALCULAR PROGRESO DEL SCROLL → TIEMPO DE VIDEO
+           SCROLL → TIEMPO DE VIDEO
         ───────────────────────────────────────────── */
         function getScrollProgress() {
-            const rect            = container.getBoundingClientRect();
-            const containerHeight = container.offsetHeight;
-            const windowHeight    = window.innerHeight;
-            const scrollableHeight = containerHeight - windowHeight;
-            const scrolled        = -rect.top;
-            return Math.max(0, Math.min(1, scrolled / scrollableHeight));
+            const rect           = container.getBoundingClientRect();
+            const scrollableH    = container.offsetHeight - window.innerHeight;
+            const scrolled       = -rect.top;
+            return Math.max(0, Math.min(1, scrolled / scrollableH));
         }
 
         function updateFromScroll() {
             const progress = getScrollProgress();
             progressBar.style.width = (progress * 100) + '%';
-
             if (video.duration) {
                 targetTime = video.duration * progress;
                 requestSeek(targetTime);
@@ -198,39 +216,31 @@
 
         /* ─────────────────────────────────────────────
            LOOP DE ANIMACIÓN
-           Solo corre para actualizar la barra de progreso
-           si el usuario hace scroll muy rápido.
-           El seek real lo maneja requestSeek().
         ───────────────────────────────────────────── */
         function startAnimLoop() {
             if (animRunning) return;
             animRunning = true;
-
             function loop() {
                 if (!isReady) { requestAnimationFrame(loop); return; }
-
                 const progress = getScrollProgress();
                 progressBar.style.width = (progress * 100) + '%';
-
                 if (video.duration) {
                     const t = video.duration * progress;
-                    // Solo pedir seek si hay diferencia real
                     if (Math.abs(t - (pendingSeek ?? video.currentTime)) > CONFIG.seekThreshold) {
                         requestSeek(t);
                     }
                 }
-
                 requestAnimationFrame(loop);
             }
             requestAnimationFrame(loop);
         }
 
         /* ─────────────────────────────────────────────
-           CROSSFADE DE FONDO Y ROTACIÓN DE STATS
+           CROSSFADE DE FONDO
         ───────────────────────────────────────────── */
         function updateStatBackground(stat, immediate = false) {
             const isMobile = window.innerWidth < 768;
-            const imgUrl = isMobile ? stat.imageMobile : stat.image;
+            const imgUrl   = isMobile ? stat.imageMobile : stat.image;
 
             if (immediate) {
                 bgA.style.backgroundImage = `url('${imgUrl}')`;
@@ -259,42 +269,30 @@
         function rotateStats() {
             currentStatIndex = (currentStatIndex + 1) % healthStats.length;
             const stat = healthStats[currentStatIndex];
-
-            loadingStat.style.opacity = '0';
+            loadingStat.style.opacity   = '0';
             loadingStat.style.transform = 'translateY(12px)';
-
             updateStatBackground(stat);
             setTimeout(() => {
-                loadingStat.innerHTML = `<strong>${stat.title}</strong>${stat.text}`;
-                loadingStat.style.opacity = '1';
+                loadingStat.innerHTML       = `<strong>${stat.title}</strong>${stat.text}`;
+                loadingStat.style.opacity   = '1';
                 loadingStat.style.transform = 'translateY(0)';
             }, 350);
         }
 
         /* ─────────────────────────────────────────────
-           LOADING: mostrar progreso de buffer inicial
+           LOADING / BUFFER
         ───────────────────────────────────────────── */
         function checkBuffer() {
             if (!video.duration) return;
-
-            // Cuánto hay en buffer desde el inicio
             let buffered = 0;
             for (let i = 0; i < video.buffered.length; i++) {
-                if (video.buffered.start(i) <= 0.1) {
-                    buffered = video.buffered.end(i);
-                    break;
-                }
+                if (video.buffered.start(i) <= 0.1) { buffered = video.buffered.end(i); break; }
             }
-
             const pct = Math.min(100, (buffered / CONFIG.requiredBuffer) * 100);
             loadingProgress.style.width = pct + '%';
             loadingDetails.textContent  = `Buffering… ${buffered.toFixed(1)}s / ${CONFIG.requiredBuffer}s`;
-
-            if (buffered >= CONFIG.requiredBuffer) {
-                showExperience();
-            } else {
-                setTimeout(checkBuffer, 300);
-            }
+            if (buffered >= CONFIG.requiredBuffer) showExperience();
+            else setTimeout(checkBuffer, 300);
         }
 
         function showExperience() {
@@ -315,17 +313,13 @@
             startAnimLoop();
         });
 
-        // Iniciar fondo y rotación de stats al cargar la página
         updateStatBackground(healthStats[0], true);
         statRotationInterval = setInterval(rotateStats, 6000);
 
-        // Por si el metadata ya estaba en caché
-        if (video.readyState >= 1) {
-            video.dispatchEvent(new Event('loadedmetadata'));
-        }
+        if (video.readyState >= 1) video.dispatchEvent(new Event('loadedmetadata'));
 
         /* ─────────────────────────────────────────────
-           EVENTOS
+           EVENTOS — video scroll
         ───────────────────────────────────────────── */
         let ticking = false;
         window.addEventListener('scroll', () => {
@@ -341,6 +335,375 @@
         window.addEventListener('resize', () => {
             if (isReady) updateFromScroll();
         });
+    </script>
+
+
+    <!-- ══════════════════════════════════════════════════════
+         SCRIPT · ESSALUD GRUPOS ETÁREOS
+    ══════════════════════════════════════════════════════ -->
+    <script>
+    /* ────────────────────────────────────────────
+       DATA
+    ──────────────────────────────────────────── */
+    const ES_GROUPS = [
+        { label: 'Neonatos',     sub: '0 – 28 días',   count: 40364,  color: '#4DBAEC', type: 'baby',     n: 4  },
+        { label: 'Lactantes',    sub: '1 mes – 1 año', count: 68342,  color: '#EC9B4D', type: 'toddler',  n: 7  },
+        { label: 'Niños',        sub: '1 – 14 años',   count: 122313, color: '#4DCC8A', type: 'child',    n: 12 },
+        { label: 'Adolescentes', sub: '15 – 17 años',  count: 61567,  color: '#EC4DAB', type: 'teen',     n: 6  },
+        { label: 'Jóvenes',      sub: '18 – 29 años',  count: 51477,  color: '#9C4DEC', type: 'youth',    n: 5  },
+        { label: 'Adultos',      sub: '30 – 59 años',  count: 66108,  color: '#E8C24D', type: 'adult',    n: 7  },
+        { label: 'Ad. Mayores',  sub: '60 – 79 años',  count: 260379, color: '#4D7EEC', type: 'adult-m',  n: 26 },
+        { label: 'Mayores',      sub: '80+ años',       count: 182478, color: '#EC5858', type: 'elderly',  n: 18 },
+    ];
+
+    /* ────────────────────────────────────────────
+       SVG FIGURE TEMPLATES  (fill="currentColor")
+    ──────────────────────────────────────────── */
+    const ES_SV = {
+        baby: `<svg viewBox="0 0 36 22" width="36" height="22" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="8.5" cy="11" r="9" fill="currentColor"/>
+            <ellipse cx="24" cy="11" rx="12" ry="7.5" fill="currentColor" opacity="0.86"/>
+            <circle cx="6"  cy="9" r="1.5" fill="rgba(0,0,0,.22)"/>
+            <circle cx="11" cy="9" r="1.5" fill="rgba(0,0,0,.22)"/>
+            <path d="M 6.5 14 Q 8.5 16.5 10.5 14" fill="none" stroke="rgba(0,0,0,.2)" stroke-width="1.4" stroke-linecap="round"/>
+        </svg>`,
+
+        toddler: `<svg viewBox="0 0 28 32" width="24" height="27" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="14" cy="8" r="7.5" fill="currentColor"/>
+            <ellipse cx="14" cy="21" rx="8.5" ry="7" fill="currentColor" opacity="0.86"/>
+            <ellipse cx="4.5" cy="28" rx="5.5" ry="3" fill="currentColor" opacity="0.73"/>
+            <ellipse cx="23.5" cy="28" rx="5.5" ry="3" fill="currentColor" opacity="0.73"/>
+            <circle cx="10.5" cy="7" r="1.5" fill="rgba(0,0,0,.22)"/>
+            <circle cx="17.5" cy="7" r="1.5" fill="rgba(0,0,0,.22)"/>
+        </svg>`,
+
+        child: `<svg viewBox="0 0 20 44" width="17" height="38" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="10" cy="6" r="5.8" fill="currentColor"/>
+            <rect x="4"   y="12" width="12" height="13" rx="2.5" fill="currentColor" opacity="0.88"/>
+            <rect x="4.5" y="25" width="11" height="5"  rx="1.5" fill="currentColor" opacity="0.68"/>
+            <rect x="4.5" y="30" width="5"  height="13" rx="2"   fill="currentColor" opacity="0.80"/>
+            <rect x="10.5" y="30" width="5" height="13" rx="2"   fill="currentColor" opacity="0.80"/>
+        </svg>`,
+
+        teen: `<svg viewBox="0 0 18 52" width="15" height="44" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="9" cy="5.5" r="5.3" fill="currentColor"/>
+            <ellipse cx="14.5" cy="3.5" rx="3.5" ry="2.2" fill="currentColor" opacity="0.48"/>
+            <rect x="3.5" y="11" width="11" height="13" rx="2.5" fill="currentColor" opacity="0.88"/>
+            <path d="M 2.5 24 L 15.5 24 L 18 43 L 0 43 Z" fill="currentColor" opacity="0.77"/>
+            <rect x="2.5"  y="43" width="5" height="8.5" rx="2.5" fill="currentColor" opacity="0.77"/>
+            <rect x="10.5" y="43" width="5" height="8.5" rx="2.5" fill="currentColor" opacity="0.77"/>
+        </svg>`,
+
+        youth: `<svg viewBox="0 0 18 52" width="15" height="44" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="9" cy="5.5" r="5.3" fill="currentColor"/>
+            <rect x="3" y="11" width="12" height="17" rx="2.5" fill="currentColor" opacity="0.90"/>
+            <rect x="3" y="28" width="12" height="3"  rx="1"   fill="currentColor" opacity="0.60"/>
+            <rect x="3"   y="31" width="5.5" height="20" rx="2.5" fill="currentColor" opacity="0.82"/>
+            <rect x="9.5" y="31" width="5.5" height="20" rx="2.5" fill="currentColor" opacity="0.82"/>
+        </svg>`,
+
+        adult: `<svg viewBox="0 0 18 52" width="15" height="44" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="9" cy="5" r="5.3" fill="currentColor"/>
+            <path d="M 4 5 Q 9 0 14 5 L 14 7.5 Q 9 6 4 7.5 Z" fill="currentColor" opacity="0.48"/>
+            <rect x="3.5" y="10" width="11" height="12" rx="2.5" fill="currentColor" opacity="0.90"/>
+            <path d="M 2 22 L 16 22 L 18 44 L 0 44 Z" fill="currentColor" opacity="0.79"/>
+            <rect x="2.5"  y="44" width="5" height="7" rx="2.5" fill="currentColor" opacity="0.77"/>
+            <rect x="10.5" y="44" width="5" height="7" rx="2.5" fill="currentColor" opacity="0.77"/>
+        </svg>`,
+
+        'adult-m': `<svg viewBox="0 0 18 52" width="15" height="44" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="9" cy="5" r="5.3" fill="currentColor"/>
+            <rect x="3"   y="10" width="12" height="18" rx="2.5" fill="currentColor" opacity="0.90"/>
+            <rect x="2.5" y="28" width="13" height="3"  rx="1"   fill="currentColor" opacity="0.60"/>
+            <rect x="2.5" y="31" width="6"  height="20" rx="2.5" fill="currentColor" opacity="0.82"/>
+            <rect x="9.5" y="31" width="6"  height="20" rx="2.5" fill="currentColor" opacity="0.82"/>
+        </svg>`,
+
+        elderly: `<svg viewBox="0 0 26 50" width="18" height="40" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="9" cy="5" r="5.3" fill="currentColor"/>
+            <path d="M 4 4.5 Q 9 0 14 4.5" fill="currentColor" opacity="0.28"/>
+            <rect x="3" y="10" width="11" height="14" rx="2.5" fill="currentColor" opacity="0.87" transform="rotate(5 8 17)"/>
+            <rect x="2" y="25" width="5.5" height="18" rx="2.5" fill="currentColor" opacity="0.82"/>
+            <rect x="9" y="25" width="5.5" height="18" rx="2.5" fill="currentColor" opacity="0.82"/>
+            <line x1="19.5" y1="18" x2="24" y2="47" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" opacity="0.62"/>
+            <ellipse cx="19" cy="17" rx="2.5" ry="1.8" fill="currentColor" opacity="0.60"/>
+        </svg>`,
+    };
+
+    const ES_DIM = {
+        baby:     { w: 36, h: 22 },
+        toddler:  { w: 24, h: 27 },
+        child:    { w: 17, h: 38 },
+        teen:     { w: 15, h: 44 },
+        youth:    { w: 15, h: 44 },
+        adult:    { w: 15, h: 44 },
+        'adult-m':{ w: 15, h: 44 },
+        elderly:  { w: 18, h: 40 },
+    };
+
+    /* ────────────────────────────────────────────
+       BUILD FIGURE DATA
+    ──────────────────────────────────────────── */
+    const esFigures = [];
+    ES_GROUPS.forEach(g => {
+        g.figs = [];
+        for (let fi = 0; fi < g.n; fi++) {
+            const fig = { fi, g, bx:0, by:0, ex:0, ey:0, el:null };
+            g.figs.push(fig);
+            esFigures.push(fig);
+        }
+    });
+    const ES_TOTAL = esFigures.length; // 85
+
+    /* ────────────────────────────────────────────
+       CREATE DOM ELEMENTS
+    ──────────────────────────────────────────── */
+    const esStage = document.getElementById('esStage');
+
+    esFigures.forEach(fig => {
+        const d = document.createElement('div');
+        d.className = 'p-fig';
+        d.style.color = fig.g.color;
+        d.innerHTML = ES_SV[fig.g.type];
+        esStage.appendChild(d);
+        fig.el = d;
+    });
+
+    // Group labels
+    const esLblEls = ES_GROUPS.map(g => {
+        const d = document.createElement('div');
+        d.className = 'g-lbl';
+        d.innerHTML = `
+            <span class="g-lbl-name" style="color:${g.color}">${g.label}</span>
+            <span class="g-lbl-sub">${g.sub}</span>
+            <span class="g-lbl-count">${g.count.toLocaleString('es-PE')}</span>`;
+        esStage.appendChild(d);
+        return d;
+    });
+
+    // Tracker dots
+    const esTrackDots = ES_GROUPS.map(g => {
+        const dot = document.createElement('div');
+        dot.className = 'track-dot';
+        dot.style.background = g.color;
+        document.getElementById('esGroupTrack').appendChild(dot);
+        return dot;
+    });
+
+    /* ────────────────────────────────────────────
+       ATENCIONES BARS
+    ──────────────────────────────────────────── */
+    (function buildEsBars() {
+        const colors = ES_GROUPS.map(g => g.color);
+        const cont   = document.getElementById('esAtBars');
+        const rows   = 58;
+
+        function sr(seed) {
+            const x = Math.sin(seed * 9301 + 49297) * 233280;
+            return x - Math.floor(x);
+        }
+
+        for (let r = 0; r < rows; r++) {
+            const row = document.createElement('div');
+            row.className = 'at-row';
+            const n = 2 + Math.floor(sr(r * 7 + 3) * 3);
+            const weights = Array.from({ length: n }, (_, s) => 0.15 + sr(r * 31 + s * 17));
+            const sum     = weights.reduce((a, b) => a + b, 0);
+            const gapPct  = (n - 1) * 0.8;
+
+            weights.forEach((w, s) => {
+                const seg = document.createElement('div');
+                seg.className  = 'at-seg';
+                seg.style.flex = `0 0 ${((w / sum) * (95 - gapPct)).toFixed(1)}%`;
+                seg.style.background = colors[Math.floor(sr(r * 53 + s * 29 + 7) * colors.length)];
+                row.appendChild(seg);
+            });
+
+            cont.appendChild(row);
+        }
+    })();
+
+    /* ────────────────────────────────────────────
+       MATH HELPERS
+    ──────────────────────────────────────────── */
+    const esLerp  = (a, b, t) => a + (b - a) * t;
+    const esClamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+    const esEio   = t => t < .5 ? 4*t*t*t : 1 - Math.pow(-2*t+2, 3) / 2;
+
+    /* ────────────────────────────────────────────
+       POSITION COMPUTATION
+    ──────────────────────────────────────────── */
+    let esPosOK = false;
+
+    function esComputePositions() {
+        const r = esStage.getBoundingClientRect();
+        const W = r.width, H = r.height;
+        if (W < 50 || H < 50) return false;
+
+        // Blob: golden-angle spiral
+        const bCX = W * 0.43;
+        const bCY = H * 0.50;
+        const bR  = Math.min(W * 0.21, H * 0.33);
+
+        esFigures.forEach((fig, i) => {
+            const angle = i * 2.399963;
+            const rr    = bR * Math.sqrt((i + 0.5) / ES_TOTAL);
+            const d     = ES_DIM[fig.g.type];
+            fig.bx = bCX + rr * Math.cos(angle) - d.w / 2;
+            fig.by = bCY + rr * Math.sin(angle) - d.h / 2;
+        });
+
+        // Columns
+        const colW = W / ES_GROUPS.length;
+        ES_GROUPS.forEach((g, gi) => {
+            const d      = ES_DIM[g.type];
+            const perRow = g.n <= 3 ? 1 : g.n <= 8 ? 2 : g.n <= 18 ? 3 : 4;
+            const rows   = Math.ceil(g.n / perRow);
+            const gH = 4, gW = 3;
+            const blockH = rows   * (d.h + gH) - gH;
+            const blockW = perRow * (d.w + gW) - gW;
+            const colCX  = (gi + 0.5) * colW;
+            const sx     = colCX - blockW / 2;
+            const sy     = (H - blockH) * 0.42;
+
+            esLblEls[gi].style.transform = `translate(${colCX}px, ${sy + blockH + 7}px) translateX(-50%)`;
+
+            g.figs.forEach((fig, fi) => {
+                const col = fi % perRow;
+                const row = Math.floor(fi / perRow);
+                fig.ex = sx + col * (d.w + gW);
+                fig.ey = sy + row * (d.h + gH);
+            });
+        });
+
+        return true;
+    }
+
+    /* ────────────────────────────────────────────
+       SCROLL PROGRESS (scoped to esSection)
+    ──────────────────────────────────────────── */
+    function esGetProgress() {
+        const sec = document.getElementById('esSection');
+        const top = -sec.getBoundingClientRect().top;
+        return esClamp(top / (sec.offsetHeight - window.innerHeight), 0, 1);
+    }
+
+    /* ────────────────────────────────────────────
+       ANIMATION UPDATE
+    ──────────────────────────────────────────── */
+    const ES_SPREAD_END  = 0.44;
+    const ES_COLOR_START = 0.40;
+    const ES_LABEL_SHOW  = 0.66;
+
+    function esUpdate() {
+        if (!esPosOK) return;
+        const p = esGetProgress();
+
+        const spreadP = esEio(esClamp(p / ES_SPREAD_END, 0, 1));
+        const colorP  = esClamp((p - ES_COLOR_START) / (1 - ES_COLOR_START), 0, 1);
+        const labelP  = esClamp((p - ES_LABEL_SHOW)  / (1 - ES_LABEL_SHOW),  0, 1);
+
+        document.getElementById('esScrollHint').classList.toggle('gone', p > 0.04);
+
+        esFigures.forEach(fig => {
+            const x = esLerp(fig.bx, fig.ex, spreadP);
+            const y = esLerp(fig.by, fig.ey, spreadP);
+            fig.el.style.transform = `translate(${x}px,${y}px)`;
+        });
+
+        ES_GROUPS.forEach((g, gi) => {
+            const thresh  = gi / ES_GROUPS.length;
+            const colored = colorP >= thresh;
+            const lblVis  = labelP >= thresh * 0.55;
+
+            g.figs.forEach(f => f.el.classList.toggle('lit', colored));
+            esLblEls[gi].style.opacity = lblVis ? (colored ? '1' : '0.28') : '0';
+            esTrackDots[gi].classList.toggle('lit', colored);
+        });
+    }
+
+    /* ────────────────────────────────────────────
+       DESKTOP INIT
+    ──────────────────────────────────────────── */
+    function esInitDesktop() {
+        esPosOK = esComputePositions();
+        if (!esPosOK) return;
+
+        esFigures.forEach(fig => {
+            fig.el.style.transition = 'none';
+            fig.el.style.transform  = `translate(${fig.bx}px,${fig.by}px)`;
+        });
+
+        requestAnimationFrame(() => {
+            esFigures.forEach(fig => { fig.el.style.transition = 'filter 0.7s ease'; });
+            esUpdate();
+        });
+    }
+
+    /* ────────────────────────────────────────────
+       MOBILE INIT
+    ──────────────────────────────────────────── */
+    function esInitMobile() {
+        esPosOK = esComputePositions();
+        if (!esPosOK) return;
+
+        const maxX = Math.max(...esFigures.map(f => f.ex + ES_DIM[f.g.type].w));
+        esStage.style.width = (maxX + 56) + 'px';
+
+        esFigures.forEach(fig => {
+            fig.el.style.transition = 'none';
+            fig.el.style.transform  = `translate(${fig.ex}px,${fig.ey}px)`;
+        });
+
+        esLblEls.forEach(l => { l.style.opacity = '0.3'; });
+
+        const sec = document.getElementById('esSection');
+        const io  = new IntersectionObserver(entries => {
+            if (!entries[0].isIntersecting) return;
+            io.disconnect();
+            ES_GROUPS.forEach((g, gi) => {
+                setTimeout(() => {
+                    g.figs.forEach(f => {
+                        f.el.style.transition = 'filter 0.6s ease';
+                        f.el.classList.add('lit');
+                    });
+                    esLblEls[gi].style.opacity = '1';
+                }, gi * 260);
+            });
+        }, { threshold: 0.25 });
+
+        io.observe(sec);
+    }
+
+    /* ────────────────────────────────────────────
+       BOOT
+    ──────────────────────────────────────────── */
+    const esIsMobile = () => window.innerWidth <= 767;
+
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+        if (esIsMobile()) esInitMobile();
+        else              esInitDesktop();
+    }));
+
+    // Scroll (desktop)
+    let esRafPending = false;
+    window.addEventListener('scroll', () => {
+        if (esIsMobile() || esRafPending) return;
+        esRafPending = true;
+        requestAnimationFrame(() => { esUpdate(); esRafPending = false; });
+    }, { passive: true });
+
+    // Resize
+    let esResizeTimer;
+    window.addEventListener('resize', () => {
+        clearTimeout(esResizeTimer);
+        esResizeTimer = setTimeout(() => {
+            esPosOK = false;
+            if (esIsMobile()) esInitMobile();
+            else { esPosOK = esComputePositions(); if (esPosOK) esUpdate(); }
+        }, 150);
+    });
+
     </script>
 
 </body>
