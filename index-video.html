@@ -288,6 +288,74 @@
     </div>
 
     <!-- ══════════════════════════════════════════════════════
+         NIVELES · ATENCIÓN MINSA
+    ══════════════════════════════════════════════════════ -->
+    <section class="niveles-section" id="nivelesSection">
+        <div class="niveles-inner">
+
+            <div class="niveles-header">
+                <h2>Niveles de atención del MINSA</h2>
+                <p class="niveles-hint">Selecciona <img src="./img/icon-click.png" alt="" width="15" aria-hidden="true"></p>
+            </div>
+
+            <div class="niveles-btns">
+                <button class="nivel-btn js-nivel-btn" data-nivel="0">Nivel 1</button>
+                <button class="nivel-btn js-nivel-btn" data-nivel="1">Nivel 2</button>
+                <button class="nivel-btn js-nivel-btn" data-nivel="2">Nivel 3</button>
+            </div>
+
+            <!-- Estado inicial: Doctor -->
+            <div class="niveles-dr" id="nivelesDr">
+                <img src="./img/doctor.png" alt="" width="100%">
+            </div>
+
+            <!-- Panel Nivel 1 -->
+            <div class="nivel-panel" id="nivelPanel0" hidden>
+                <h3 class="np-title">Primer Nivel <em>(I-1 a I-4)</em></h3>
+                <p class="np-subtitle">Postas, centros de salud y policlínicos</p>
+                <p class="np-body">Es la puerta de entrada al sistema. Aquí se atienden consultas de medicina general, controles de embarazo, vacunación, salud mental comunitaria y enfermedades crónicas como diabetes e hipertensión. Los establecimientos I-1 e I-2 son puestos y postas, con o sin médico permanente. Los I-3 son centros de salud con mayor capacidad, y los I-4 tienen camas de internamiento para casos que no requieren hospital.</p>
+                <p class="np-body np-highlight"><strong>Es el nivel más extendido del país — el MINSA tiene más de 7,900 establecimientos de primer nivel — pero también el más debilitado:</strong> más del 95% opera con capacidad instalada inadecuada. Aquí trabaja el 84% de los médicos generales y el 91% de los psicólogos, pero apenas el 4% de los oncólogos y el 46% de los ginecólogos.</p>
+                <p class="np-org-title">¿Cómo se organiza?</p>
+                <dl class="np-dl">
+                    <div class="np-dl-row"><dt>I-1 / I-2:</dt><dd>Puesto o posta de salud, con o sin médico permanente.</dd></div>
+                    <div class="np-dl-row"><dt>I-3:</dt><dd>Centro de salud, centro médico o policlínico, sin camas de internamiento.</dd></div>
+                    <div class="np-dl-row"><dt>I-4:</dt><dd>Centro de salud o centro médico con camas de internamiento.</dd></div>
+                </dl>
+            </div>
+
+            <!-- Panel Nivel 2 -->
+            <div class="nivel-panel" id="nivelPanel1" hidden>
+                <h3 class="np-title">Segundo Nivel <em>(II-1, II-2, II-E)</em></h3>
+                <p class="np-subtitle">Hospitales generales y especializados</p>
+                <p class="np-body np-highlight"><strong>Para qué sirve</strong></p>
+                <p class="np-body">Recibe los casos que el primer nivel no puede resolver. Los hospitales II-1 y II-2 son hospitales generales - con mayor complejidad en los II-2 - y los II-E son establecimientos de atención especializada. Tienen servicios de cirugía, emergencias, hospitalización y especialidades como ginecología, pediatría y traumotología.</p>
+                <p class="np-body np-highlight"><strong>El MINSA tiene 226 establecimientos de segundo nivel.</strong> Es el nivel donde se concentra buena parte de los ginecólogos (33%) y donde deberían atenderse las complicaciones obstétricas, pero en regiones como Loreto, con 34 muertes maternas en 2025, la cobertura de especialistas en este nivel es insuficiente.</p>
+                <p class="np-org-title">¿Cómo se organiza?</p>
+                <dl class="np-dl">
+                    <div class="np-dl-row"><dt>II-1 / II-2:</dt><dd>Hospital General; II-2 tiene mayor capacidad resolutiva y más especialidades que II-1.</dd></div>
+                    <div class="np-dl-row"><dt>II-E:</dt><dd>Hospital o clínica de atención especializada (segundo nivel).</dd></div>
+                </dl>
+            </div>
+
+            <!-- Panel Nivel 3 -->
+            <div class="nivel-panel" id="nivelPanel2" hidden>
+                <h3 class="np-title">Tercer Nivel <em>(III-1, III-2, III-E)</em></h3>
+                <p class="np-subtitle">Institutos y hospitales de alta complejidad</p>
+                <p class="np-body np-highlight"><strong>Para qué sirve</strong></p>
+                <p class="np-body">El nivel de mayor especialización. Aquí se atienden enfermedades complejas, se realizan transplantes, cirugías de alta complejidad y se concentran los especialistas más escasos. Los III-1 y III-2 son hospitales de referencia nacional  o regional, y los III-E son institutos especializados como el INEN para cáncer o el INSM para salud mental.</p>
+                <p class="np-body np-highlight"><strong>El MINSA tiene apenas 49 establecimientos de tercer nivel en todo el país.</strong> Aquí está concentrado el 77% de los oncólogos. Para un paciente con cáncer en Pasco o Madre de Dios, el especialista más cercano puede estar a cientos de kilómetros.</p>
+                <p class="np-org-title">¿Cómo se organiza?</p>
+                <dl class="np-dl">
+                    <div class="np-dl-row"><dt>III-1:</dt><dd>Hospital de alta complejidad y referencia regional o nacional.</dd></div>
+                    <div class="np-dl-row"><dt>III-2:</dt><dd>Instituto especializado (ej. INEN para cáncer, INSM para salud mental).</dd></div>
+                    <div class="np-dl-row"><dt>III-E:</dt><dd>Hospital o instituto de atención especializada de alta complejidad.</dd></div>
+                </dl>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════
          ESSALUD · GRUPOS ETÁREOS
     ══════════════════════════════════════════════════════ -->
     <section class="es-section" id="esSection">
@@ -942,6 +1010,31 @@
         }, 150);
     });
 
+    </script>
+
+    <!-- ══════════════════════════════════════════════════════
+         SCRIPT · NIVELES ATENCIÓN MINSA
+    ══════════════════════════════════════════════════════ -->
+    <script>
+    (function () {
+        const btns    = Array.from(document.querySelectorAll('.js-nivel-btn'));
+        const drPanel = document.getElementById('nivelesDr');
+        const panels  = Array.from(document.querySelectorAll('.nivel-panel'));
+        if (!btns.length) return;
+
+        btns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const n = parseInt(btn.dataset.nivel, 10);
+
+                btns.forEach(b => b.classList.toggle('is-active', b === btn));
+                drPanel.hidden = true;
+
+                panels.forEach(p => { p.hidden = true; });
+                void panels[n].offsetWidth; // reflow to restart animation
+                panels[n].hidden = false;
+            });
+        });
+    })();
     </script>
 
     <!-- ══════════════════════════════════════════════════════
