@@ -201,6 +201,93 @@
     </section>
 
     <!-- ══════════════════════════════════════════════════════
+         TÍTULO SECCIÓN 
+    ══════════════════════════════════════════════════════ -->
+    <section class="section-title">
+        <div class="box-title">
+            <div class="ctn-box-title">
+                <h3>El laberinto de</h3>
+            </div>            
+        </div>
+        <div class="box-title cian">
+            <div class="ctn-box-title">
+                <h3>la salud pública <img src="./img/marca-seccion-2.png" alt="" width="100%"></h3>
+            </div>
+        </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════
+         DATOS · SLIDER
+    ══════════════════════════════════════════════════════ -->
+    <section class="datos-slider">
+        <div class="ds-inner">
+            <button class="ds-arrow ds-prev" aria-label="Anterior">
+                <svg viewBox="0 0 24 24" width="44" height="44" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
+            <div class="ds-viewport">
+
+                <!-- Slide 1 -->
+                <div class="ds-slide is-active">
+                    <div class="ds-text">
+                        <h3>Personal</h3>
+                        <p><strong>4 de cada 100</strong> oncólogos del MINSA trabajan en establecimientos de primer nivel. El 77% está concentrado en institutos especializados de tercer nivel — lejos de donde vive la mayoría de pacientes con cáncer.</p>
+                    </div>
+                    <div class="ds-img">
+                        <img src="./img/bg-slide-1.jpg" alt="Ilustración de lazo de cáncer" width="100%">
+                    </div>
+                </div>
+
+                <!-- Slide 2 -->
+                <div class="ds-slide">
+                    <div class="ds-text">
+                        <h3>Espera</h3>
+                        <p><strong>57 días</strong> es el tiempo máximo registrado para conseguir una cita con especialista en el Hospital San Juan de Lurigancho. El promedio nacional de diferimiento en EsSalud es de 16 días — pero en algunas redes regionales supera el mes.</p>
+                    </div>
+                    <div class="ds-img">
+                        <img src="./img/bg-slide-2.jpg" alt="Ilustración de calendario" width="100%">
+                    </div>
+                </div>
+
+                <!-- Slide 3 -->
+                <div class="ds-slide">
+                    <div class="ds-text">
+                        <h3>Mortalidad materna</h3>
+                        <p><strong>194 muertes</strong> por cada 100,000 nacidos vivos ocurren en Loreto — casi 7 veces más que en Lima (28) y casi 3 veces la meta que el Perú se comprometió a alcanzar en 2030 con los ODS.</p>
+                    </div>
+                    <div class="ds-img">
+                        <img src="./img/bg-slide-3.jpg" alt="Ilustración de corazón con bebé" width="100%">
+                    </div>
+                </div>
+
+                <!-- Slide 4 -->
+                <div class="ds-slide">
+                    <div class="ds-text">
+                        <h3>Salud mental</h3>
+                        <p><strong>1 psiquiatra</strong> por cada 100,000 habitantes hay en promedio fuera de Lima. En Puno, la región con más intentos de suicidio registrados per cápita, hay 0.36 psiquiatras por cada 100,000 habitantes.</p>
+                    </div>
+                    <div class="ds-img">
+                        <img src="./img/bg-slide-4.jpg" alt="Ilustración de mente" width="100%">
+                    </div>
+                </div>
+
+            </div>
+            <button class="ds-arrow ds-next" aria-label="Siguiente">
+                <svg viewBox="0 0 24 24" width="44" height="44" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+        </div>
+    </section>
+
+    <div class="box-texto">
+        <h5>El laberinto de la salud pública</h5>
+        <p>
+            <span>El sistema de salud peruano tiene cinco grandes actores: el MINSA —que norma y regula—, EsSalud —que atiende a los trabajadores formales—, las sanidades de las Fuerzas Armadas y la PNP, y los privados.</span> En teoría, cada uno cubre a su población. En la práctica, millones caen en los vacíos entre uno y otro.
+        </p>
+        <p>
+            <span>El primer nivel —postas y centros de salud— debería resolver el 80% de los problemas de salud antes de que lleguen a un hospital.</span> Pero más del 95% de esos establecimientos opera con infraestructura inadecuada. El resultado: los hospitales colapsan atendiendo lo que debió resolverse mucho antes y mucho más cerca de casa.
+        </p>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════
          ESSALUD · GRUPOS ETÁREOS
     ══════════════════════════════════════════════════════ -->
     <section class="es-section" id="esSection">
@@ -855,6 +942,37 @@
         }, 150);
     });
 
+    </script>
+
+    <!-- ══════════════════════════════════════════════════════
+         SCRIPT · DATOS SLIDER
+    ══════════════════════════════════════════════════════ -->
+    <script>
+    (function () {
+        const slides  = Array.from(document.querySelectorAll('.ds-slide'));
+        const prevBtn = document.querySelector('.ds-prev');
+        const nextBtn = document.querySelector('.ds-next');
+        const vp      = document.querySelector('.ds-viewport');
+        if (!slides.length) return;
+
+        let cur = 0;
+
+        function go(n) {
+            slides[cur].classList.remove('is-active');
+            cur = (n + slides.length) % slides.length;
+            slides[cur].classList.add('is-active');
+        }
+
+        prevBtn.addEventListener('click', () => go(cur - 1));
+        nextBtn.addEventListener('click', () => go(cur + 1));
+
+        let tx = 0;
+        vp.addEventListener('touchstart', e => { tx = e.touches[0].clientX; }, { passive: true });
+        vp.addEventListener('touchend',   e => {
+            const diff = tx - e.changedTouches[0].clientX;
+            if (Math.abs(diff) > 50) go(diff > 0 ? cur + 1 : cur - 1);
+        }, { passive: true });
+    })();
     </script>
 
     <!-- ══════════════════════════════════════════════════════
