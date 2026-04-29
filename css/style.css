@@ -1189,7 +1189,7 @@ a.caso-btn-link:hover { background: #2a2a2a; }
     flex: 0 0 calc(33.33% - 14px);
     flex-direction: column;
     gap: 8px;
-    max-width: 240px;
+    max-width: 265px;
     padding: 20px 12px;
     text-align: center;
     transition: border-color 0.2s, background 0.2s;
@@ -1212,7 +1212,7 @@ a.caso-btn-link:hover { background: #2a2a2a; }
 .ss-desc {
     color: #666;
     display: block;
-    font: 0.78rem/1.5 'Isidora Medium', sans-serif;
+    font: 0.78rem/1.5 'Isidora Sans SemiBold';
 }
 
 /* Detail panel */
@@ -1223,7 +1223,6 @@ a.caso-btn-link:hover { background: #2a2a2a; }
 
 .ss-detail {
     animation: ssFadeIn 0.35s ease;
-    background: #f8f8f6;
     border-radius: 10px;
     display: none;
     margin-top: 24px;
@@ -1243,16 +1242,14 @@ a.caso-btn-link:hover { background: #2a2a2a; }
 
 .ss-detail-name {
     display: block;
-    font: 1.5rem/1.1 'Isidora Black', sans-serif;
+    font: 1.2rem/1.1 'Isidora Bold';
     margin-bottom: 4px;
 }
 .ss-detail-sub {
     color: #777;
     display: block;
     font: 0.82rem/1 'Isidora Medium', sans-serif;
-    letter-spacing: 0.05em;
     margin-bottom: 10px;
-    text-transform: uppercase;
 }
 .ss-detail-desc {
     color: #555;
@@ -1290,16 +1287,17 @@ a.caso-btn-link:hover { background: #2a2a2a; }
 .sistema-nota {
     border: 2px solid #F04F25;
     border-radius: 14px;
-    margin-top: 44px;
+    margin: 40px auto;
+    max-width: 600px;
     padding: 28px 28px 24px;
     position: relative;
-    text-align: center;
+    text-align: left;    
 }
 .nota-badge {
     background: #fff;
     border: 2px solid #F04F25;
     border-radius: 100px;
-    color: #F04F25;
+    color: #000;
     display: inline-block;
     font: 0.82rem/1 'Isidora Bold', sans-serif;
     left: 50%;
@@ -1311,7 +1309,7 @@ a.caso-btn-link:hover { background: #2a2a2a; }
 }
 .sistema-nota p {
     color: #333;
-    font: 0.95rem/1.7 'Isidora Medium', sans-serif;
+    font: 0.95rem/1.7 'Isidora Sans SemiBold';
 }
 .sistema-nota p strong { font-family: 'Isidora Bold', sans-serif; }
 
