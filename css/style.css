@@ -1046,6 +1046,286 @@ a.caso-btn-link:hover { background: #2a2a2a; }
         }
 
 /* ══════════════════════════════════════════════════════
+   SISTEMA DE SALUD · ORGANIZACIÓN
+══════════════════════════════════════════════════════ */
+.sistema-section {
+    background: #fff;
+    padding: 70px 0 80px;
+}
+.sistema-inner {
+    margin: 0 auto;
+    max-width: 980px;
+    padding: 0 24px;
+}
+.sistema-h2 {
+    font: 2rem/1.2 "ivypresto-headline";
+    font-weight: 900;
+    margin-bottom: 40px;
+    text-align: center;
+}
+
+/* MINSA top */
+.sistema-minsa {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    margin: 0 auto;
+    max-width: 520px;
+    text-align: center;
+}
+.minsa-circle {
+    align-items: center;
+    border: 4px solid #47D7EF;
+    border-radius: 50%;
+    display: flex;
+    height: 130px;
+    justify-content: center;
+    margin-bottom: 14px;
+    overflow: hidden;
+    width: 130px;
+}
+.minsa-circle img {
+    height: 90%;
+    object-fit: contain;
+    width: 90%;
+}
+.minsa-name {
+    font: 2rem/1.2 "ivypresto-headline";
+    font-weight: 900;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+}
+.minsa-desc {
+    color: #444;
+    font: 0.92rem/1.65 'Isidora Sans SemiBold';
+    text-align: left;
+}
+
+/* Connector lines */
+.sistema-connector-v {
+    background: #5e5d5d;
+    height: 30px;
+    margin: 0 auto;
+    width: 2px;
+}
+.sistema-connector-h {
+    background: #5e5d5d;
+    height: 2px;
+    position: relative;
+    width: 100%;
+}
+    .sistema-connector-h::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 2px;
+        height: 40px;
+        background: #5e5d5d;
+    }
+    .sistema-connector-h::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 2px;
+        height: 40px;
+        background: #5e5d5d;
+    }
+
+/* SUSALUD */
+.sistema-susalud {
+    align-items: center;
+    border-bottom: 1px solid #ddd;
+    border-top: 1px solid #ddd;
+    display: flex;
+    gap: 16px;
+    margin: 50px auto 0;
+    max-width: 500px;
+    padding: 18px 0;
+}
+.susalud-logo {
+    flex-shrink: 0;
+    height: 66px;
+    width: auto;
+}
+.susalud-name {
+    display: block;
+    font: 1.05rem/1 'Isidora Bold';
+    margin-bottom: 6px;
+}
+.susalud-desc {
+    color: #444;
+    font: 0.88rem/1.55 'Isidora Sans SemiBold';
+}
+
+/* Subsectores */
+.sistema-subsectores { padding-top: 28px; }
+.subsectores-h3 {
+    font: 1.4rem / 1 'Isidora Bold';
+    max-width: 500px;
+    margin: 0 auto 6px;
+}
+.subsectores-intro {
+    color: #555;
+    font: 0.92rem/1.5 'Isidora Sans SemiBold';
+    margin: 0 auto 25px;
+    max-width: 500px;
+}
+
+.subsectores-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+    justify-content: center;
+}
+
+.subsector-btn {
+    align-items: center;
+    background: #fff;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    flex: 0 0 calc(33.33% - 14px);
+    flex-direction: column;
+    gap: 8px;
+    max-width: 240px;
+    padding: 20px 12px;
+    text-align: center;
+    transition: border-color 0.2s, background 0.2s;
+    -webkit-tap-highlight-color: transparent;
+}
+.subsector-btn:hover { border-color: #47D7EF; }
+.subsector-btn.is-active {
+    background: #eaf9fc;
+    border-color: #47D7EF;
+}
+
+.ss-icon { height: 70px; width: 70px; }
+.ss-icon img { height: 100%; object-fit: contain; width: 100%; }
+
+.ss-name {
+    color: #111;
+    display: block;
+    font: 0.88rem/1.2 'Isidora Bold', sans-serif;
+}
+.ss-desc {
+    color: #666;
+    display: block;
+    font: 0.78rem/1.5 'Isidora Medium', sans-serif;
+}
+
+/* Detail panel */
+@keyframes ssFadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.ss-detail {
+    animation: ssFadeIn 0.35s ease;
+    background: #f8f8f6;
+    border-radius: 10px;
+    display: none;
+    margin-top: 24px;
+    padding: 32px 28px;
+}
+.ss-detail.is-open { display: block; }
+
+.ss-detail-header {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 28px;
+    text-align: center;
+}
+.ss-detail-icon { height: 80px; margin-bottom: 12px; width: 80px; }
+.ss-detail-icon img { height: 100%; object-fit: contain; width: 100%; }
+
+.ss-detail-name {
+    display: block;
+    font: 1.5rem/1.1 'Isidora Black', sans-serif;
+    margin-bottom: 4px;
+}
+.ss-detail-sub {
+    color: #777;
+    display: block;
+    font: 0.82rem/1 'Isidora Medium', sans-serif;
+    letter-spacing: 0.05em;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+}
+.ss-detail-desc {
+    color: #555;
+    font: 0.9rem/1.55 'Isidora Medium', sans-serif;
+    max-width: 480px;
+}
+
+.ss-stats {
+    border-top: 1px solid #ddd;
+    display: flex;
+    padding-top: 24px;
+}
+.ss-stat {
+    align-items: center;
+    border-right: 1px solid #ddd;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 6px;
+    padding: 0 10px;
+    text-align: center;
+}
+.ss-stat:last-child { border-right: none; }
+.ss-num {
+    display: block;
+    font: 2.4rem/1 'Isidora Black', sans-serif;
+}
+.ss-lbl {
+    color: #555;
+    display: block;
+    font: 0.78rem/1.4 'Isidora Medium', sans-serif;
+}
+
+/* Nota sobre aseguramiento */
+.sistema-nota {
+    border: 2px solid #F04F25;
+    border-radius: 14px;
+    margin-top: 44px;
+    padding: 28px 28px 24px;
+    position: relative;
+    text-align: center;
+}
+.nota-badge {
+    background: #fff;
+    border: 2px solid #F04F25;
+    border-radius: 100px;
+    color: #F04F25;
+    display: inline-block;
+    font: 0.82rem/1 'Isidora Bold', sans-serif;
+    left: 50%;
+    padding: 6px 16px;
+    position: absolute;
+    top: -16px;
+    transform: translateX(-50%);
+    white-space: nowrap;
+}
+.sistema-nota p {
+    color: #333;
+    font: 0.95rem/1.7 'Isidora Medium', sans-serif;
+}
+.sistema-nota p strong { font-family: 'Isidora Bold', sans-serif; }
+
+@media (max-width: 767px) {
+    .sistema-section { padding: 50px 0 60px; }
+    .sistema-h2 { font-size: 1.5rem; }
+    .subsector-btn { flex: 0 0 calc(50% - 10px); max-width: none; }
+    .ss-num { font-size: 1.8rem; }
+    .ss-detail { padding: 24px 16px; }
+    .sistema-nota { padding: 28px 18px 20px; }
+    .sistema-nota p { font-size: 0.88rem; }
+}
+
+/* ══════════════════════════════════════════════════════
    NIVELES · ATENCIÓN MINSA
 ══════════════════════════════════════════════════════ */
 .niveles-section {

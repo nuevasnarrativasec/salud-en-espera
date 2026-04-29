@@ -356,6 +356,155 @@
     </section>
 
     <!-- ══════════════════════════════════════════════════════
+         SISTEMA DE SALUD · ORGANIZACIÓN
+    ══════════════════════════════════════════════════════ -->
+    <section class="sistema-section">
+        <div class="sistema-inner">
+
+            <h2 class="sistema-h2">Cómo se organiza el sistema de salud en el Perú</h2>
+
+            <!-- MINSA -->
+            <div class="sistema-minsa">
+                <div class="minsa-circle">
+                    <img src="./img/icon-minsa.png" alt="MINSA">
+                </div>
+                <h3 class="minsa-name">MINSA</h3>
+                <p class="minsa-desc">Es la cabeza del sistema: define las reglas, regula y supervisa. Pero también atiende directamente a los pacientes a través de las DIRIS en Lima, las DIRESA y GERESA en las 24 regiones, y sus hospitales nacionales e institutos especializados.</p>
+            </div>
+            <div class="sistema-connector-v"></div>
+            <div class="sistema-connector-h"></div>
+
+            <!-- SUSALUD -->
+            <div class="sistema-susalud">
+                <img src="./img/logo-susalud.jpg" alt="SUSALUD" class="susalud-logo">
+                <div>
+                    <strong class="susalud-name">SUSALUD</strong>
+                    <p class="susalud-desc">Vigila que todos los prestadores —públicos y privados— respeten los derechos de los pacientes.</p>
+                </div>
+            </div>
+
+            <!--<div class="sistema-connector-h"></div>-->
+
+            <!-- Subsectores/Prestadores -->
+            <div class="sistema-subsectores">
+                <h3 class="subsectores-h3">Subsectores/Prestadores</h3>
+                <p class="subsectores-intro">En el Perú, no existe un solo sistema de salud sino varios que funcionan en paralelo:</p>
+
+                <div class="subsectores-grid">
+                    <button class="subsector-btn js-subsector" data-subsector="0">
+                        <div class="ss-icon"><img src="./img/icon-hospital.png" alt=""></div>
+                        <span class="ss-name">MINSA + Gobiernos Regionales</span>
+                        <span class="ss-desc">la red pública general, la más grande y la que atiende a quienes menos tienen.</span>
+                    </button>
+                    <button class="subsector-btn js-subsector" data-subsector="1">
+                        <div class="ss-icon"><img src="./img/icon-hospital.png" alt=""></div>
+                        <span class="ss-name">EsSalud</span>
+                        <span class="ss-desc">la seguridad social para trabajadores formales, con redes y hospitales propios.</span>
+                    </button>
+                    <button class="subsector-btn js-subsector" data-subsector="2">
+                        <div class="ss-icon"><img src="./img/icon-hospital.png" alt=""></div>
+                        <span class="ss-name">FF.AA.</span>
+                        <span class="ss-desc">Ejército, Marina y Fuerza Aérea tienen sus propios hospitales y centros de atención.</span>
+                    </button>
+                    <button class="subsector-btn js-subsector" data-subsector="3">
+                        <div class="ss-icon"><img src="./img/icon-hospital.png" alt=""></div>
+                        <span class="ss-name">PNP</span>
+                        <span class="ss-desc">La Policía Nacional también tiene su propia red, con tres niveles de atención.</span>
+                    </button>
+                    <button class="subsector-btn js-subsector" data-subsector="4">
+                        <div class="ss-icon"><img src="./img/icon-hospital.png" alt=""></div>
+                        <span class="ss-name">Privados</span>
+                        <span class="ss-desc">Clínicas, consultorios y ONGs. Las EPS y aseguradoras privadas canalizan a sus asegurados hacia esta red.</span>
+                    </button>
+                </div>
+
+                <!-- Panel: MINSA -->
+                <div class="ss-detail" id="ssDetail0">
+                    <div class="ss-detail-header">
+                        <div class="ss-detail-icon"><img src="./img/sector-minsa.png" alt=""></div>
+                        <strong class="ss-detail-name">MINSA + Gobiernos Regionales</strong>
+                        <span class="ss-detail-sub">A nivel nacional</span>
+                        <p class="ss-detail-desc">Postas, centros de salud, hospitales regionales, nacionales e institutos especializados.</p>
+                    </div>
+                    <div class="ss-stats">
+                        <div class="ss-stat"><span class="ss-num">7,900</span><span class="ss-lbl">Establecimientos de primer nivel</span></div>
+                        <div class="ss-stat"><span class="ss-num">600</span><span class="ss-lbl">Hospitales</span></div>
+                        <div class="ss-stat"><span class="ss-num">24</span><span class="ss-lbl">Redes de salud</span></div>
+                    </div>
+                </div>
+
+                <!-- Panel: EsSalud -->
+                <div class="ss-detail" id="ssDetail1">
+                    <div class="ss-detail-header">
+                        <div class="ss-detail-icon"><img src="./img/sector-essalud.png" alt=""></div>
+                        <strong class="ss-detail-name">EsSalud</strong>
+                        <span class="ss-detail-sub">A nivel nacional</span>
+                        <p class="ss-detail-desc">CAP, policlínicos, hospitales generales, hospitales nacionales e institutos.</p>
+                    </div>
+                    <div class="ss-stats">
+                        <div class="ss-stat"><span class="ss-num">800</span><span class="ss-lbl">Centros/postas</span></div>
+                        <div class="ss-stat"><span class="ss-num">300</span><span class="ss-lbl">Hospitales generales</span></div>
+                        <div class="ss-stat"><span class="ss-num">5</span><span class="ss-lbl">Institutos</span></div>
+                    </div>
+                </div>
+
+                <!-- Panel: FF.AA. -->
+                <div class="ss-detail" id="ssDetail2">
+                    <div class="ss-detail-header">
+                        <div class="ss-detail-icon"><img src="./img/sector-ffaa.png" alt=""></div>
+                        <strong class="ss-detail-name">FF.AA.</strong>
+                        <span class="ss-detail-sub">A nivel nacional</span>
+                        <p class="ss-detail-desc">Centros médicos, policlínicos y hospitales del Ejército, Marina y Fuerza Aérea.</p>
+                    </div>
+                    <div class="ss-stats">
+                        <div class="ss-stat"><span class="ss-num">45</span><span class="ss-lbl">Centros de salud</span></div>
+                        <div class="ss-stat"><span class="ss-num">12</span><span class="ss-lbl">Hospitales</span></div>
+                        <div class="ss-stat"><span class="ss-num">3</span><span class="ss-lbl">Institutos especializados</span></div>
+                    </div>
+                </div>
+
+                <!-- Panel: PNP -->
+                <div class="ss-detail" id="ssDetail3">
+                    <div class="ss-detail-header">
+                        <div class="ss-detail-icon"><img src="./img/sector-pnp.png" alt=""></div>
+                        <strong class="ss-detail-name">PNP</strong>
+                        <span class="ss-detail-sub">A nivel nacional</span>
+                        <p class="ss-detail-desc">Policlínicos, centros médicos y hospitales de la Policía Nacional del Perú.</p>
+                    </div>
+                    <div class="ss-stats">
+                        <div class="ss-stat"><span class="ss-num">40</span><span class="ss-lbl">Centros médicos</span></div>
+                        <div class="ss-stat"><span class="ss-num">8</span><span class="ss-lbl">Hospitales</span></div>
+                        <div class="ss-stat"><span class="ss-num">1</span><span class="ss-lbl">Instituto especializado</span></div>
+                    </div>
+                </div>
+
+                <!-- Panel: Privados -->
+                <div class="ss-detail" id="ssDetail4">
+                    <div class="ss-detail-header">
+                        <div class="ss-detail-icon"><img src="./img/sector-privado.png" alt=""></div>
+                        <strong class="ss-detail-name">Privados</strong>
+                        <span class="ss-detail-sub">A nivel nacional</span>
+                        <p class="ss-detail-desc">Clínicas, consultorios y ONGs. Las EPS y aseguradoras privadas canalizan a sus asegurados hacia esta red.</p>
+                    </div>
+                    <div class="ss-stats">
+                        <div class="ss-stat"><span class="ss-num">4,200+</span><span class="ss-lbl">Clínicas y consultorios</span></div>
+                        <div class="ss-stat"><span class="ss-num">680</span><span class="ss-lbl">Clínicas</span></div>
+                        <div class="ss-stat"><span class="ss-num">42</span><span class="ss-lbl">Hospitales privados</span></div>
+                    </div>
+                </div>
+
+            </div><!-- /sistema-subsectores -->
+
+            <!-- Nota sobre aseguramiento -->
+            <div class="sistema-nota">
+                <div class="nota-badge">Nota sobre aseguramiento</div>
+                <p><strong>Dependiendo de en qué trabajas o cuánto ganas, te atiende un sistema diferente.</strong> El SIS cubre a quienes no tienen seguro; EsSalud, a los trabajadores formales; las FF.AA. y la PNP tienen régimen propio; y los seguros privados y EPS cubren a quienes pueden pagarlos. Todos operan bajo el marco del Aseguramiento Universal en Salud (AUS), aunque en la práctica la cobertura es muy desigual.</p>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════
          ESSALUD · GRUPOS ETÁREOS
     ══════════════════════════════════════════════════════ -->
     <section class="es-section" id="esSection">
@@ -642,7 +791,6 @@
             if (isReady) updateFromScroll();
         });
     </script>
-
 
     <!-- ══════════════════════════════════════════════════════
          SCRIPT · ESSALUD GRUPOS ETÁREOS
@@ -1010,6 +1158,33 @@
         }, 150);
     });
 
+    </script>
+
+    <!-- ══════════════════════════════════════════════════════
+         SCRIPT · SISTEMA DE SALUD (subsectores)
+    ══════════════════════════════════════════════════════ -->
+    <script>
+    (function () {
+        const btns    = Array.from(document.querySelectorAll('.js-subsector'));
+        const details = Array.from(document.querySelectorAll('.ss-detail'));
+        if (!btns.length) return;
+
+        btns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const n      = parseInt(btn.dataset.subsector, 10);
+                const isOpen = btn.classList.contains('is-active');
+
+                btns.forEach(b => b.classList.remove('is-active'));
+                details.forEach(d => d.classList.remove('is-open'));
+
+                if (!isOpen) {
+                    btn.classList.add('is-active');
+                    details[n].classList.add('is-open');
+                    details[n].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }
+            });
+        });
+    })();
     </script>
 
     <!-- ══════════════════════════════════════════════════════
