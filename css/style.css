@@ -1260,27 +1260,33 @@ a.caso-btn-link:hover { background: #2a2a2a; }
 .ss-stats {
     border-top: 1px solid #ddd;
     display: flex;
+    justify-content: center;
     padding-top: 24px;
 }
 .ss-stat {
     align-items: center;
-    border-right: 1px solid #ddd;
     display: flex;
     flex: 1;
     flex-direction: column;
     gap: 6px;
+    justify-content: end;
+    max-width: 200px;
     padding: 0 10px;
     text-align: center;
 }
+    .ss-stat img{
+        max-width: 100px;
+    }
 .ss-stat:last-child { border-right: none; }
 .ss-num {
     display: block;
-    font: 2.4rem/1 'Isidora Black', sans-serif;
+    font: 2.4rem/1 "ivypresto-headline";
+    font-weight: 700;
 }
 .ss-lbl {
     color: #555;
     display: block;
-    font: 0.78rem/1.4 'Isidora Medium', sans-serif;
+    font: 0.78rem/1.4 'Isidora Bold';
 }
 
 /* Nota sobre aseguramiento */
