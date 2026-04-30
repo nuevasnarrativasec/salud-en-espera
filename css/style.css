@@ -448,6 +448,12 @@ section.section-title{
                     right: -30px;
                     width: 325px;                    
                 }
+                    .cian img.marca-seccion-3{
+                        bottom: -35px;
+                        position: absolute;
+                        right: -30px;
+                        width: 465px;                    
+                    }
             .cian h4{
                 display: inline-block;
                 font: 1.1rem / 1.3 'Isidora Light';
