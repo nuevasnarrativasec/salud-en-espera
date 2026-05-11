@@ -1570,7 +1570,7 @@ span.separador {
     vertical-align: bottom;
     max-width: 300px;
     margin-left: -150px;
-    margin-bottom: 40px;
+    margin-bottom: 20px;
 }
 .voz-titulo {
     font: 600 2rem/1.2 "ivypresto-headline";
@@ -1926,7 +1926,7 @@ span.separador {
     flex: 1;
     flex-direction: column;
     gap: 6px;
-    justify-content: start;
+    justify-content: end;
     max-width: 200px;
     padding: 0 10px;
     text-align: center;
@@ -3483,4 +3483,4 @@ span.separador-logo {
 }
 .digemid-sort-btn.active svg {
     stroke: #fff;
-}
+}
