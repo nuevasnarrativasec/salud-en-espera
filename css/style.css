@@ -1143,6 +1143,11 @@ section.section-title{
     color: #333;
     font: 0.9rem/1.7 'Isidora Medium';
 }
+.aviso-voz{
+    color: #8d8d8d;
+    font: 0.9rem/1.7 'Isidora Medium';
+    margin-top: 12px;
+}
 .caso-text strong { font-family: 'Isidora Bold', sans-serif; }
 
 .caso-footer { padding: 20px 20px 24px; }
