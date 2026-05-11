@@ -1648,9 +1648,9 @@
         <!-- Results -->
         <div class="digemid-results-wrap" id="dgResults"></div>
 
-        <div class="box-fuente fuente-atendidos" style="letter-spacing: -0.2px;">
+        <!--<div class="box-fuente fuente-atendidos" style="letter-spacing: -0.2px;">
             <p><span>Fuente: </span> Observatorio de Precios de Medicamentos Esenciales — DIGEMID, 2026. Base de datos con 3,244,695 de registros.</p>
-        </div>
+        </div>-->
 
     </section>
 
@@ -3875,7 +3875,7 @@
                     o.value = o.textContent = r.departamento;
                     selDepto.appendChild(o);
                 });
-                setStatus('ready', 'Base de datos lista · 3,244,695 registros');
+                setStatus('ready', 'Fuente: Observatorio de Precios de Medicamentos Esenciales — DIGEMID, 2026. Base de datos con 3,244,695 de registros.');
                 searchInp.disabled = false;
             } catch (e) { setStatus('error', 'Error: ' + e.message); console.error(e); }
         }
