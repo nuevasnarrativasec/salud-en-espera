@@ -13,6 +13,36 @@
     <!-- Ivy Presto headline-->
     <link rel="stylesheet" href="https://use.typekit.net/otp2meg.css">
 
+    <style>
+        /* ── Casos: ocultar arrows y mostrar bullets en móvil ── */
+        .casos-dots {
+            display: none;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 18px;
+        }
+        .casos-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ccc;
+            border: none;
+            padding: 0;
+            cursor: pointer;
+            transition: background 0.25s, transform 0.25s;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .casos-dot.is-active {
+            background: #e5553f;
+            transform: scale(1.3);
+        }
+        @media (max-width: 767px) {
+            .casos-arrow { display: none !important; }
+            .casos-inner { padding: 0 16px; }
+            .casos-dots  { display: flex; }
+        }
+    </style>
+
 </head>
 
 <body>
@@ -63,7 +93,6 @@
                 <source id="videoSource"
                     data-src-desktop="https://res.cloudinary.com/dvcf0htuf/video/upload/q_auto,vc_h264/v1775504906/video-intro_bmvmnq.mp4"
                     data-src-mobile="https://res.cloudinary.com/dvcf0htuf/video/upload/q_auto,vc_h264/v1778534072/video-intro-movil_uaf4rz.mp4?v2"
-                    src="https://res.cloudinary.com/dvcf0htuf/video/upload/q_auto,vc_h264/v1775504906/video-intro_bmvmnq.mp4"
                     type="video/mp4">
                 Tu navegador no soporta video HTML5.
             </video>
@@ -875,6 +904,7 @@
                 </svg>
             </button>
         </div><!-- /casos-inner -->
+        <div class="casos-dots" id="casosDots"></div>
     </section>
 
     <!-- ══════════════════════════════════════════════════════
@@ -2231,11 +2261,15 @@
         (function () {
             const source = document.getElementById('videoSource');
             if (!source) return;
+            const video = document.getElementById('scrollVideo');
             const isMobile = window.innerWidth < 768;
             const url = isMobile
                 ? source.getAttribute('data-src-mobile')
                 : source.getAttribute('data-src-desktop');
-            if (url) source.setAttribute('src', url);
+            if (url) {
+                source.setAttribute('src', url);
+                video.load(); // fuerza al browser a releer <source> y cargar el video correcto
+            }
         })();
 
         /* ─────────────────────────────────────────────
@@ -3131,11 +3165,27 @@
             const cards = Array.from(track.querySelectorAll('.caso-card'));
             const prevBtn = section.querySelector('.casos-prev');
             const nextBtn = section.querySelector('.casos-next');
+            const dotsWrap = document.getElementById('casosDots');
             let cur = 0;
+
+            /* ── DOTS ─────────────────────────────────────────── */
+            const dots = cards.map((_, i) => {
+                const d = document.createElement('button');
+                d.className = 'casos-dot' + (i === 0 ? ' is-active' : '');
+                d.setAttribute('aria-label', `Caso ${i + 1}`);
+                d.addEventListener('click', () => go(i));
+                dotsWrap.appendChild(d);
+                return d;
+            });
+
+            function updateDots() {
+                dots.forEach((d, i) => d.classList.toggle('is-active', i === cur));
+            }
 
             function updateNav() {
                 if (prevBtn) prevBtn.style.visibility = cur === 0 ? 'hidden' : '';
                 if (nextBtn) nextBtn.style.visibility = cur === cards.length - 1 ? 'hidden' : '';
+                updateDots();
             }
 
             function go(n) {

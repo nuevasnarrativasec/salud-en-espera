@@ -2385,6 +2385,10 @@ span.separador {
     .mapa-res-region{
         margin-bottom: 10px;
     }
+
+    .box-fuente{
+        padding: 0 0 30px !important;
+    }
 }
 
 /* ══════════════════════════════════════════════════════
