@@ -1504,6 +1504,7 @@ span.separador {
     }
     .voz-section .voz-content{
         margin-left: 0;
+        width: 100%;
     }
 
 }
@@ -1533,7 +1534,7 @@ span.separador {
 .voz-inner {
     padding: 44px 0 0;
     position: relative;
-    max-width: 570px;
+    max-width: 475px;
     margin: 0 auto;
 }
     .voz-inner img{
@@ -1576,7 +1577,7 @@ span.separador {
     min-width: 0;
     vertical-align: bottom;
     max-width: 300px;
-    margin-left: -150px;
+    margin-left: -190px;
     margin-bottom: 20px;
 }
 .voz-titulo {
