@@ -3370,9 +3370,12 @@
                 }
             });
 
+            var nivelesSection = document.getElementById('nivelesSection');
+
             function checkScroll() {
                 var rect = section.getBoundingClientRect();
-                if (rect.top <= 50) {
+                var pastNiveles = nivelesSection && nivelesSection.getBoundingClientRect().top <= 0;
+                if (rect.top <= 50 && !pastNiveles) {
                     card.classList.add(interacted ? 'is-peeking' : 'is-open');
                 } else {
                     card.classList.remove('is-open', 'is-peeking');
