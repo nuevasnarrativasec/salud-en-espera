@@ -512,7 +512,7 @@
 
             <!-- Panel Nivel 1 -->
             <div class="nivel-panel" id="nivelPanel0" hidden>
-                <h3 class="np-title">Primer Nivel <em>(I-1 a I-4)</em></h3>
+                <h3 class="np-title">Nivel 1 <em>(I-1 a I-4)</em></h3>
                 <p class="np-subtitle">El muro debilitado: Postas, centros de salud y policlínicos</p>
                 <p class="np-body"><strong>Para qué sirve:</strong> Es la puerta de entrada. Atiende medicina general,
                     vacunas, controles de embarazo y enfermedades crónicas como diabetes e hipertensión.</p>
@@ -547,7 +547,7 @@
 
             <!-- Panel Nivel 2 -->
             <div class="nivel-panel" id="nivelPanel1" hidden>
-                <h3 class="np-title">Segundo Nivel <em>(II-1, II-2, II-E)</em></h3>
+                <h3 class="np-title">Nivel 2 <em>(II-1, II-2, II-E)</em></h3>
                 <p class="np-subtitle">En deuda: Hospitales generales</p>
                 <p class="np-body np-highlight"><strong>Para qué sirve</strong> Recibe los casos que el primer nivel no
                     puede resolver. Incluye cirugías, emergencias y especialidades como pediatría y traumatología.</p>
@@ -582,7 +582,7 @@
 
             <!-- Panel Nivel 3 -->
             <div class="nivel-panel" id="nivelPanel2" hidden>
-                <h3 class="np-title">Tercer Nivel <em>(III-1, III-2, III-E)</em></h3>
+                <h3 class="np-title">Nivel 3 <em>(III-1, III-2, III-E)</em></h3>
                 <p class="np-subtitle">Alta complejidad: Institutos y hospitales de alta complejidad</p>
                 <p class="np-body np-highlight"><strong>Para qué sirve</strong> Aquí se realizan trasplantes, cirugías
                     complejas y se tratan enfermedades raras o avanzadas.</p>
@@ -1054,7 +1054,7 @@
                     </select>
                 </div>
                 <div class="mapa-filtro">
-                    <label class="mapa-label" for="mapaEsp">Selecciona tu especialidad</label>
+                    <label class="mapa-label" for="mapaEsp">Elige tu especialidad</label>
                     <select class="mapa-select" id="mapaEsp" disabled>
                         <option value="">— Selecciona región primero —</option>
                     </select>
@@ -1481,7 +1481,7 @@
                         <table class="brecha-tabla" id="brechaTabla">
                             <thead>
                                 <tr>
-                                    <th>Área</th>
+                                    <th>Campo</th>
                                     <th>Especialista</th>
                                     <th>1° nivel</th>
                                     <th>2° nivel</th>
@@ -3351,7 +3351,7 @@
         (function () {
             var card = document.getElementById('mayteCard');
             var closeBtn = document.getElementById('mayteClose');
-            var section = document.querySelector('.sistema-minsa');
+            var section = document.querySelector('.sistema-h2');
             if (!card || !section) return;
 
             var interacted = false;
@@ -3370,15 +3370,17 @@
                 }
             });
 
-            var observer = new IntersectionObserver(function (entries) {
-                if (entries[0].isIntersecting) {
+            function checkScroll() {
+                var rect = section.getBoundingClientRect();
+                if (rect.top <= 50) {
                     card.classList.add(interacted ? 'is-peeking' : 'is-open');
                 } else {
                     card.classList.remove('is-open', 'is-peeking');
                 }
-            }, { threshold: 0.15 });
+            }
 
-            observer.observe(section);
+            window.addEventListener('scroll', checkScroll, { passive: true });
+            checkScroll();
         })();
     </script>
 
@@ -3709,7 +3711,7 @@
                     (d.nacimientos > 0 ? '<div class="brecha-res-carga-item"><span class="brecha-res-carga-num">' + fmt(d.nacimientos) + '</span><span class="brecha-res-carga-label">nacimientos</span></div>' : '') +
                     (d.tmm > 0 ? '<div class="brecha-res-carga-item"><span class="brecha-res-carga-num">' + d.tmm + '</span><span class="brecha-res-carga-label">muertes maternas por 100 000 nacidos</span></div>' : '') +
                     '</div>' +
-                    '<p class="brecha-res-hint">Selecciona área y especialista para filtrar la tabla.</p>';
+                    '<p class="brecha-res-hint"></p>';
             }
 
             function buildTabla(region, filtroArea, filtroEsp) {
