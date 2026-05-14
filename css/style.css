@@ -727,6 +727,7 @@ section.section-title{
             font-weight: 700;
             letter-spacing: 0.1em;
             text-transform: uppercase;
+            font: 1.3rem / 1.1 'Isidora Sans SemiBold';
         }
         .g-lbl-sub {
             display: block;
@@ -735,6 +736,7 @@ section.section-title{
             letter-spacing: 0.06em;
             text-transform: uppercase;
             margin-top: 2px;
+            font: 1.3rem / 1.1 'Isidora Medium';
         }
         .g-lbl-count {
             display: block;
