@@ -117,8 +117,8 @@
     }
 
     Promise.all([
-        fetch('./data/tiempos.json').then(function (r) { return r.json(); }),
-        fetch('./img/peru.svg').then(function (r) { return r.text(); })
+        fetch('https://nuevasnarrativasec.github.io/salud-en-espera/data/tiempos.json').then(function (r) { return r.json(); }),
+        fetch('https://nuevasnarrativasec.github.io/salud-en-espera/img/peru.svg').then(function (r) { return r.text(); })
     ]).then(function (results) {
         DATA = results[0];
         var svgText = results[1];
