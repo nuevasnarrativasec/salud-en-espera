@@ -44,26 +44,26 @@ const healthStats = [
     {
         title: 'Primer nivel debilitado',
         text: '¿Cómo debería ser nuestro sistema de salud?',
-        image: './img/bg-stats-1.gif',
-        imageMobile: './img/bg-stats-1-movil.gif'
+        image: 'https://nuevasnarrativasec.github.io/salud-en-espera/img/bg-stats-1.gif',
+        imageMobile: 'https://nuevasnarrativasec.github.io/salud-en-espera/img/bg-stats-1-movil.gif'
     },
     {
         title: 'Cobertura insuficiente',
         text: 'Se requieren más de 2,000 nuevos centros de promoción y vigilancia comunal; el 74% aún no se implementa',
-        image: './img/bg-stats-2.gif',
-        imageMobile: './img/bg-stats-2-movil.gif'
+        image: 'https://nuevasnarrativasec.github.io/salud-en-espera/img/bg-stats-2.gif',
+        imageMobile: 'https://nuevasnarrativasec.github.io/salud-en-espera/img/bg-stats-2-movil.gif'
     },
     {
         title: 'Hospitales saturados',
         text: '92% de los hospitales presentan infraestructura inadecuada y un 34% está aún por implementarse',
-        image: './img/bg-stats-3.gif',
-        imageMobile: './img/bg-stats-3-movil.gif'
+        image: 'https://nuevasnarrativasec.github.io/salud-en-espera/img/bg-stats-3.gif',
+        imageMobile: 'https://nuevasnarrativasec.github.io/salud-en-espera/img/bg-stats-3-movil.gif'
     },
     {
         title: 'Medicamentos esenciales faltantes',
         text: 'Desde antihipertensivos hasta oncológicos, el desabastecimiento es recurrente',
-        image: './img/bg-stats-4.gif',
-        imageMobile: './img/bg-stats-4-movil.jpg'
+        image: 'https://nuevasnarrativasec.github.io/salud-en-espera/img/bg-stats-4.gif',
+        imageMobile: 'https://nuevasnarrativasec.github.io/salud-en-espera/img/bg-stats-4-movil.gif'
     }
 ];
 

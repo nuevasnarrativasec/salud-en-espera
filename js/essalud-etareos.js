@@ -19,14 +19,14 @@ const ES_GROUPS = [
            usa ES_DIM (que controla el layout)
 ──────────────────────────────────────────── */
 const ES_IMGS = {
-    baby: { srcs: ['./img/bg-neonato-1.png?v2', './img/bg-neonato-2.png?v2'], w: 36, h: 22 },
-    toddler: { srcs: ['./img/bg-lactante-1.png', './img/bg-lactante-2.png'], w: 24, h: 27 },
-    child: { srcs: ['./img/bg-nino-1.png', './img/bg-nino-2.png'], w: 17, h: 38 },
-    teen: { srcs: ['./img/bg-adolescente-1.png', './img/bg-adolescente-2.png'] },
-    youth: { srcs: ['./img/bg-joven-1.png', './img/bg-joven-2.png'] },
-    adult: { srcs: ['./img/bg-adulto-1.png', './img/bg-adulto-2.png'] },
-    'adult-m': { srcs: ['./img/bg-adulto-mayor-1.png', './img/bg-adulto-mayor-2.png', './img/bg-adulto-mayor-3.png'] },
-    elderly: { srcs: ['./img/bg-mayores-1.png', './img/bg-mayores-2.png', './img/bg-mayores-3.png', './img/bg-mayores-4.png'] },
+    baby: { srcs: ['https://nuevasnarrativasec.github.io/salud-en-espera/img/bg-neonato-1.png?v2', 'https://nuevasnarrativasec.github.io/salud-en-espera/img/bg-neonato-2.png?v2'], w: 36, h: 22 },
+    toddler: { srcs: ['https://nuevasnarrativasec.github.io/salud-en-espera/img/bg-lactante-1.png', 'https://nuevasnarrativasec.github.io/salud-en-espera/img/bg-lactante-2.png'], w: 24, h: 27 },
+    child: { srcs: ['https://nuevasnarrativasec.github.io/salud-en-espera/img/bg-nino-1.png', 'https://nuevasnarrativasec.github.io/salud-en-espera/img/bg-nino-2.png'], w: 17, h: 38 },
+    teen: { srcs: ['https://nuevasnarrativasec.github.io/salud-en-espera/img/bg-adolescente-1.png', 'https://nuevasnarrativasec.github.io/salud-en-espera/img/bg-adolescente-2.png'] },
+    youth: { srcs: ['https://nuevasnarrativasec.github.io/salud-en-espera/img/bg-joven-1.png', 'https://nuevasnarrativasec.github.io/salud-en-espera/img/bg-joven-2.png'] },
+    adult: { srcs: ['https://nuevasnarrativasec.github.io/salud-en-espera/img/bg-adulto-1.png', 'https://nuevasnarrativasec.github.io/salud-en-espera/img/bg-adulto-2.png'] },
+    'adult-m': { srcs: ['https://nuevasnarrativasec.github.io/salud-en-espera/img/bg-adulto-mayor-1.png', 'https://nuevasnarrativasec.github.io/salud-en-espera/img/bg-adulto-mayor-2.png', 'https://nuevasnarrativasec.github.io/salud-en-espera/img/bg-adulto-mayor-3.png'] },
+    elderly: { srcs: ['https://nuevasnarrativasec.github.io/salud-en-espera/img/bg-mayores-1.png', 'https://nuevasnarrativasec.github.io/salud-en-espera/img/bg-mayores-2.png', 'https://nuevasnarrativasec.github.io/salud-en-espera/img/bg-mayores-3.png', 'https://nuevasnarrativasec.github.io/salud-en-espera/img/bg-mayores-4.png'] },
 };
 
 const ES_DIM = {

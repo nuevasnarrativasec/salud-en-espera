@@ -1,6 +1,6 @@
 import * as duckdb from 'https://cdn.jsdelivr.net/npm/@duckdb/duckdb-wasm@1.29.0/+esm';
 
-const PARQUET_URL = new URL('./data/digemid_esenciales.parquet', window.location.href).href;
+const PARQUET_URL = new URL('https://nuevasnarrativasec.github.io/salud-en-espera/data/digemid_esenciales.parquet', window.location.href).href;
 const PAGE_SIZE = 20;
 
 const selDepto   = document.getElementById('dgDepto');
