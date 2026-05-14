@@ -682,6 +682,7 @@ section.section-title{
             letter-spacing: 0.17em;
             text-transform: uppercase;
             color: #9a9080;
+            font: 0.8rem/1.1 'Isidora Medium';
         }
 
         .panel-big-num {
