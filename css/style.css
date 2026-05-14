@@ -690,6 +690,7 @@ section.section-title{
             font-weight: 800;
             color: #e85858;
             line-height: 1.1;
+            font: 1.9rem / 1.1 'Isidora Bold', sans-serif;
         }
 
         /* STAGE */
@@ -742,6 +743,7 @@ section.section-title{
             color: #e85858;
             margin-top: 3px;
             letter-spacing: -0.01em;
+            font: 1.5rem / 1.1 'Isidora Bold', sans-serif;
         }
 
         /* RIGHT: atenciones */

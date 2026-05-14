@@ -188,7 +188,7 @@
     selEsp.addEventListener('change', onEspChange);
 
     // Cargar SVG del mapa
-    fetch('./img/peru.svg').then(function (r) { return r.text(); }).then(function (svgText) {
+    fetch('https://nuevasnarrativasec.github.io/salud-en-espera/img/peru.svg').then(function (r) { return r.text(); }).then(function (svgText) {
         svgWrap.innerHTML = svgText;
         svgDoc = svgWrap.querySelector('svg');
         if (svgDoc) {
