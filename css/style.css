@@ -988,7 +988,7 @@ section.section-title{
     .ds-slide { flex-direction: column; gap: 16px; }
     .ds-text { flex: none; padding: 0 16px; width: 100%; }
     .ds-text h3 { font-size: 2rem; margin-bottom: 14px; }
-    .ds-text p { font-size: 1rem; }
+    .ds-text p { font-size: 1.2rem; }
     .ds-img { flex: none; padding: 0 20px; width: 100%; }
     .ds-img img { max-height: 200px; }
 
@@ -3055,6 +3055,25 @@ span.separador {
 
     .box-texto p{
         font: 1.2rem / 1.8 'Isidora Medium', sans-serif;
+    }
+    .evz-desc{
+        font-size: 1.2rem;
+    }
+    .evz-note,
+    .caso-text{
+        font-size: 1.1rem;
+    }
+    .box-fuente p,
+    .footer-content ul li h4,
+    .footer-content ul li p,
+    .minsa-desc,
+    .caso-city,
+    .caso-field-label,
+    .caso-field-value,
+    .ec-desc,
+    .ec-nota,
+    .ec-brecha-hosp{
+        font-size: 1rem;
     }
     
 
