@@ -125,6 +125,8 @@
         }
 
         // Cargar una imagen específica
+        // Usa img.decode() para mover la decodificación JPEG fuera del hilo principal,
+        // reduciendo la presión sobre el INP en móvil.
         function loadImage(index) {
             return new Promise((resolve, reject) => {
                 if (index < 0 || index >= config.frameCount) {
@@ -139,38 +141,46 @@
                 }
 
                 const img = new Image();
-                
-                img.onload = () => {
-                    images[index] = img;
-                    loadedCount++;
-                    resolve(img);
-                };
-                
-                img.onerror = () => {
-                    console.error(`Error cargando: ${getImagePath(index)}`);
-                    reject();
-                };
-                
                 img.src = getImagePath(index);
+
+                img.decode()
+                    .then(() => {
+                        images[index] = img;
+                        loadedCount++;
+                        resolve(img);
+                    })
+                    .catch(() => {
+                        console.error(`Error cargando: ${getImagePath(index)}`);
+                        reject();
+                    });
             });
         }
 
-        // Cargar batch inicial de imágenes
+        // Cargar batch inicial de imágenes en chunks de 10 para no saturar
+        // el hilo principal con 100 decodificaciones simultáneas.
         async function preloadInitialBatch() {
-            const promises = [];
             const batchSize = Math.min(config.preloadBatchSize, config.frameCount);
-            
-            for (let i = 0; i < batchSize; i++) {
-                promises.push(
-                    loadImage(i).then(() => {
-                        const progress = ((i + 1) / batchSize) * 100;
-                        loadingProgress.style.width = progress + '%';
-                        loadingDetails.textContent = `Cargando frames iniciales... ${i + 1}/${batchSize}`;
-                    })
-                );
-            }
+            const chunkSize = 10;
+            let loaded = 0;
 
-            await Promise.all(promises);
+            for (let i = 0; i < batchSize; i += chunkSize) {
+                const chunk = [];
+                const end = Math.min(i + chunkSize, batchSize);
+
+                for (let j = i; j < end; j++) {
+                    chunk.push(
+                        loadImage(j).then(() => {
+                            loaded++;
+                            loadingProgress.style.width = (loaded / batchSize * 100) + '%';
+                            loadingDetails.textContent = `Cargando frames iniciales... ${loaded}/${batchSize}`;
+                        }).catch(() => { loaded++; })
+                    );
+                }
+
+                await Promise.all(chunk);
+                // Pausa mínima para que el hilo principal atienda interacciones
+                await new Promise(r => setTimeout(r, 0));
+            }
         }
 
         // Cargar frames dinámicamente según scroll

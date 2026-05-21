@@ -1,5 +1,5 @@
 {
-    "liveServer.settings.port": 5502,
+    "liveServer.settings.port": 5503,
     "workbench.editorAssociations": {
         "*.copilotmd": "vscode.markdown.preview.editor",
         "*.parquet": "duckdb.dataFileViewer",

@@ -76,11 +76,27 @@ let pendingSeek = null;
 let lastSeekTime = 0;
 let isReady = false;
 let animRunning = false;
+let rafId = null;
+let lastScrollY = -1;
 let currentStatIndex = 0;
 let statRotationInterval;
 let activeBg = 'A';
 const MIN_LOADING_MS = 4000;
 const loadingShownAt = Date.now();
+
+/* ─────────────────────────────────────────────
+   CACHÉ DE LAYOUT
+   getBoundingClientRect() y offsetHeight fuerzan
+   recálculo de layout. Se cachean aquí y se
+   actualizan solo en resize, no en cada frame.
+───────────────────────────────────────────── */
+let cachedContainerTop = 0;
+let cachedScrollableH = 1;
+
+function cacheLayout() {
+    cachedContainerTop = container.getBoundingClientRect().top + window.scrollY;
+    cachedScrollableH = Math.max(1, container.offsetHeight - window.innerHeight);
+}
 
 /* ─────────────────────────────────────────────
    SEEK INTELIGENTE
@@ -115,10 +131,9 @@ video.addEventListener('seeked', () => {
    SCROLL → TIEMPO DE VIDEO
 ───────────────────────────────────────────── */
 function getScrollProgress() {
-    const rect = container.getBoundingClientRect();
-    const scrollableH = container.offsetHeight - window.innerHeight;
-    const scrolled = -rect.top;
-    return Math.max(0, Math.min(1, scrolled / scrollableH));
+    // Usa window.scrollY + valores cacheados: sin forzar layout en el hot path.
+    const scrolled = window.scrollY - cachedContainerTop;
+    return Math.max(0, Math.min(1, scrolled / cachedScrollableH));
 }
 
 function updateFromScroll() {
@@ -131,24 +146,41 @@ function updateFromScroll() {
 }
 
 /* ─────────────────────────────────────────────
-   LOOP DE ANIMACIÓN
+   LOOP DE ANIMACIÓN (auto-suspendible)
+   El loop se activa con el scroll y se detiene
+   solo cuando no hay cambio de scroll ni seek
+   pendiente, liberando el hilo principal.
 ───────────────────────────────────────────── */
 function startAnimLoop() {
-    if (animRunning) return;
-    animRunning = true;
+    if (rafId !== null) return; // ya hay un loop corriendo
+
     function loop() {
-        if (!isReady) { requestAnimationFrame(loop); return; }
-        const progress = getScrollProgress();
-        progressBar.style.width = (progress * 100) + '%';
-        if (video.duration) {
-            const t = video.duration * progress;
-            if (Math.abs(t - (pendingSeek ?? video.currentTime)) > CONFIG.seekThreshold) {
-                requestSeek(t);
+        if (!isReady) { rafId = requestAnimationFrame(loop); return; }
+
+        const currentScrollY = window.scrollY;
+        const scrollChanged = currentScrollY !== lastScrollY;
+        const hasPending = pendingSeek !== null;
+
+        if (scrollChanged || hasPending) {
+            lastScrollY = currentScrollY;
+            const progress = getScrollProgress();
+            progressBar.style.width = (progress * 100) + '%';
+            if (video.duration) {
+                const t = video.duration * progress;
+                if (Math.abs(t - (pendingSeek ?? video.currentTime)) > CONFIG.seekThreshold) {
+                    requestSeek(t);
+                }
             }
+            rafId = requestAnimationFrame(loop);
+        } else {
+            // Sin actividad: el loop se suspende hasta el próximo scroll
+            rafId = null;
+            animRunning = false;
         }
-        requestAnimationFrame(loop);
     }
-    requestAnimationFrame(loop);
+
+    animRunning = true;
+    rafId = requestAnimationFrame(loop);
 }
 
 /* ─────────────────────────────────────────────
@@ -228,6 +260,7 @@ function showExperience() {
 video.addEventListener('loadedmetadata', () => {
     console.log(`✅ Metadata cargada | Duración: ${video.duration.toFixed(2)}s`);
     loadingDetails.textContent = 'Descargando buffer inicial…';
+    cacheLayout(); // medidas estables una vez que el layout está completo
     video.currentTime = 0;
     checkBuffer();
     startAnimLoop();
@@ -245,7 +278,10 @@ let ticking = false;
 window.addEventListener('scroll', () => {
     if (!ticking) {
         requestAnimationFrame(() => {
-            if (isReady) updateFromScroll();
+            if (isReady) {
+                updateFromScroll();
+                startAnimLoop(); // reactiva el loop si estaba suspendido
+            }
             ticking = false;
         });
         ticking = true;
@@ -253,5 +289,6 @@ window.addEventListener('scroll', () => {
 }, { passive: true });
 
 window.addEventListener('resize', () => {
+    cacheLayout(); // recalcula medidas del contenedor al cambiar el viewport
     if (isReady) updateFromScroll();
 });
