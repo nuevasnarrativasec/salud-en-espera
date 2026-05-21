@@ -3053,6 +3053,9 @@ span.separador {
         flex-direction: column;
     }
 
+    .box-texto p{
+        font: 1.2rem / 1.8 'Isidora Medium', sans-serif;
+    }
     
 
 }
